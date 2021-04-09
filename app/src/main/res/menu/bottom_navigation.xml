@@ -2,19 +2,19 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/search_graph"
+        android:id="@+id/navigation_search"
         android:icon="@drawable/ic_baseline_search_24"
         android:title= "Поиск" />
     <item
-        android:id="@+id/catalog_graph"
+        android:id="@+id/navigation_catalog"
         android:icon="@drawable/ic_baseline_menu_book_24"
         android:title="Каталок" />
     <item
-        android:id="@+id/basket_graph"
+        android:id="@+id/navigation_basket"
         android:icon="@drawable/ic_baseline_shopping_bag_24"
         android:title="Корзина" />
     <item
-        android:id="@+id/user_graph"
+        android:id="@+id/navigation_user"
         android:icon="@drawable/ic_baseline_account_box_24"
         android:title="Пользователь" />
 </menu>

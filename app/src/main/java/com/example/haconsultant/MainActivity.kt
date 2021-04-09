@@ -7,20 +7,41 @@ import com.example.haconsultant.fragment.catalog.SearchFragment
 import com.example.haconsultant.fragment.catalog.SearchFragmentInteractor
 import com.example.haconsultant.fragment.home.HomeFragment
 import com.example.haconsultant.fragment.home.HomeFragmentInteractor
+import com.example.haconsultant.fragment.user.UserFragment
 import com.example.haconsultant.model.HomeCatalog
 import com.example.haconsultant.model.Product
+import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragmentInteractor {
 
     private val homeFragment = HomeFragment()
     private val searchFragment = SearchFragment()
+    private val userFragment = UserFragment()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         supportFragmentManager.beginTransaction().replace(R.id.navHostContainer, homeFragment).commit()
         //setActionBar(findViewById(R.layout.app_bar2))
-
+        bottomNavigation.setOnNavigationItemSelectedListener { item ->
+            when (item.itemId){
+                R.id.navigation_search ->{
+                    supportFragmentManager.beginTransaction().replace(R.id.navHostContainer, homeFragment).commit()
+                    true
+                }
+                R.id.navigation_catalog -> {
+                    true
+                }
+                R.id.navigation_basket -> {
+                    true
+                }
+                R.id.navigation_user -> {
+                    supportFragmentManager.beginTransaction().replace(R.id.navHostContainer,userFragment).commit()
+                    true
+                }
+                else -> false
+            }
+        }
         //startActivity(this, ScrollingActivity::class.java)
     }
 
