@@ -2,6 +2,7 @@ package com.example.haconsultant.fragment.home
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -34,8 +35,8 @@ class HomeFragment : Fragment() {
         return view
     }
 
-    private var newProductAdapter: HomeProductAdapter? = null
-    private var lastProductAdapter: HomeProductAdapter? = null
+    private var newProductAdapter: ProductAdapter? = null
+    private var lastProductAdapter: ProductAdapter? = null
     private var homeCatalogAdapter: HomeCatalogAdapter? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -43,18 +44,23 @@ class HomeFragment : Fragment() {
         setLastRecycler()
         setCatalogRecycler()
         iconQrCode.setOnClickListener {
-            fragmentInteractor?.onOpenCameraQrCode()
+            fragmentInteractor?.onHomeOpenCameraQrCode()
         }
         homeBtnSearchProduct.setOnClickListener {
-            fragmentInteractor?.onOpenSerch()
+            fragmentInteractor?.onHomeOpenSerch()
         }
-        homeTextSearchProduct.setOnClickListener {
-            fragmentInteractor?.onOpenSerch()
+//        homeTextSearchProduct.setOnClickListener {
+//            fragmentInteractor?.onHomeOpenSerch()
+//        }
+        homeTextSearchProduct.setOnFocusChangeListener { v, hasFocus ->
+            if (hasFocus == true) {
+                fragmentInteractor?.onHomeOpenSerch()
+            }
         }
     }
 
-    fun setNewRecycler(){
-        newProductAdapter = HomeProductAdapter(fragmentInteractor)
+    fun setNewRecycler() {
+        newProductAdapter = ProductAdapter(homeFragmentInteractor = fragmentInteractor)
         viewModel.newList.observe(viewLifecycleOwner, Observer {
             it.let {
                 newProductAdapter?.items = it
@@ -63,8 +69,8 @@ class HomeFragment : Fragment() {
         homeRecyclerNew.adapter = newProductAdapter
     }
 
-    fun setLastRecycler(){
-        lastProductAdapter = HomeProductAdapter(fragmentInteractor)
+    fun setLastRecycler() {
+        lastProductAdapter = ProductAdapter(homeFragmentInteractor = fragmentInteractor)
         viewModel.lastList.observe(viewLifecycleOwner, Observer {
             it.let {
                 lastProductAdapter?.items = it
@@ -73,7 +79,7 @@ class HomeFragment : Fragment() {
         homeRecyclerWatched.adapter = lastProductAdapter
     }
 
-    fun setCatalogRecycler(){
+    fun setCatalogRecycler() {
         homeCatalogAdapter = HomeCatalogAdapter(fragmentInteractor)
         viewModel.catalogList.observe(viewLifecycleOwner, Observer {
             it.let {

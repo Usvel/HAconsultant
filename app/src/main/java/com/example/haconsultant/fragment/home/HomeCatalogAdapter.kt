@@ -26,7 +26,7 @@ class HomeCatalogAdapter(private val fragmentInteractor: HomeFragmentInteractor?
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HomeViewHolderCaralog {
         val layoutInflater = LayoutInflater.from(parent.context)
         val view = layoutInflater.inflate(R.layout.home_item_catalog, parent, false)
-        return HomeViewHolderCaralog(view, { fragmentInteractor?.onOpenCatalog(it) })
+        return HomeViewHolderCaralog(view, { fragmentInteractor?.onHomeOpenCatalog(it) })
     }
 
     override fun onBindViewHolder(holder: HomeViewHolderCaralog, position: Int) {
@@ -76,7 +76,7 @@ class HomeViewHolderCaralog(
 class HomeCatalogItemDecoration : RecyclerView.ItemDecoration() {
 
     companion object {
-        val MARGIN_RIGHT = 10
+        private val MARGIN_RIGHT = 10
     }
 
     override fun getItemOffsets(

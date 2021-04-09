@@ -1,24 +1,40 @@
 package com.example.haconsultant.fragment.home
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.example.haconsultant.R
+import com.example.haconsultant.fragment.catalog.SearchDecorationTypeProvider
+import com.example.haconsultant.fragment.catalog.SearchFragmentInteractor
 import com.example.haconsultant.model.Product
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.home_item_product.view.*
 
-class HomeProductAdapter(private val fragmentInteractor: HomeFragmentInteractor?) :
-    RecyclerView.Adapter<ProductViewHolder>() {
+class ProductAdapter(
+    private val homeFragmentInteractor: HomeFragmentInteractor? = null,
+    private val searchFragmentInteractor: SearchFragmentInteractor? = null
+) :
+    RecyclerView.Adapter<ProductViewHolder>(), SearchDecorationTypeProvider {
 
     var items: List<Product> = listOf()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         val view = layoutInflater.inflate(R.layout.home_item_product, parent, false)
-        return ProductViewHolder(view, { fragmentInteractor?.onOpenItem(it) })
+        if (homeFragmentInteractor != null)
+            return ProductViewHolder(
+                view,
+                { homeFragmentInteractor?.onHomeOpenItem(it) }
+            )
+        else {
+            return ProductViewHolder(
+                view,
+                { searchFragmentInteractor?.onSearchOpenItem(it) }
+            )
+        }
     }
 
     override fun onBindViewHolder(holder: ProductViewHolder, position: Int) {
@@ -27,6 +43,21 @@ class HomeProductAdapter(private val fragmentInteractor: HomeFragmentInteractor?
 
     override fun getItemCount(): Int {
         return items.size
+    }
+
+    override fun getTypeProsition(position: Int, context: Context): Boolean {
+        if (position == RecyclerView.NO_POSITION) {
+            return false
+        }
+
+        if (items.isEmpty()) {
+            return false
+        }
+
+        if (position.rem(2) == 1) {
+            return false
+        }
+        return true
     }
 }
 

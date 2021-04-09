@@ -52,4 +52,6 @@ dependencies {
     // ... Coil (https://github.com/coil-kt/coil)
     implementation("io.coil-kt:coil:0.12.0")
     implementation("io.coil-kt:coil-svg:0.12.0")
+    //recycler
+    implementation "androidx.recyclerview:recyclerview:1.2.0"
 }

@@ -4,8 +4,8 @@ import com.example.haconsultant.model.HomeCatalog
 import com.example.haconsultant.model.Product
 
 interface HomeFragmentInteractor {
-    fun onOpenItem(product: Product)
-    fun onOpenCatalog(homeCatalog: HomeCatalog)
-    fun onOpenCameraQrCode()
-    fun onOpenSerch()
+    fun onHomeOpenItem(product: Product)
+    fun onHomeOpenCatalog(homeCatalog: HomeCatalog)
+    fun onHomeOpenCameraQrCode()
+    fun onHomeOpenSerch()
 }
