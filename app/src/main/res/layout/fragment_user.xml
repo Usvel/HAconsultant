@@ -7,6 +7,25 @@
     android:orientation="vertical"
     tools:context=".fragment.user.UserFragment">
 
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="5dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start|center"
+                android:text="Профиль"
+                android:layout_marginStart="20dp"
+                android:textColor="@color/white"
+                android:textSize="22sp" />
+        </FrameLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="180dp"
@@ -19,6 +38,7 @@
             android:background="@color/design_default_color_primary">
 
             <TextView
+                android:id="@+id/userName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="20dp"
@@ -29,6 +49,7 @@
                 android:textSize="20sp" />
 
             <ImageView
+                android:id="@+id/userIconQrCode"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_gravity="end|top"
@@ -39,6 +60,7 @@
                 android:src="@drawable/ic_baseline_qr_code_scanner_24" />
 
             <TextView
+                android:id="@+id/userId"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|center"

@@ -8,11 +8,12 @@ import com.example.haconsultant.fragment.catalog.SearchFragmentInteractor
 import com.example.haconsultant.fragment.home.HomeFragment
 import com.example.haconsultant.fragment.home.HomeFragmentInteractor
 import com.example.haconsultant.fragment.user.UserFragment
+import com.example.haconsultant.fragment.user.UserFragmentInteractor
 import com.example.haconsultant.model.HomeCatalog
 import com.example.haconsultant.model.Product
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragmentInteractor {
+class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragmentInteractor, UserFragmentInteractor {
 
     private val homeFragment = HomeFragment()
     private val searchFragment = SearchFragment()
@@ -67,5 +68,9 @@ class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragment
 
     override fun onSearchBack() {
         supportFragmentManager.popBackStack()
+    }
+
+    override fun onUserOpenCameraQrCode() {
+        Toast.makeText(this,"QrCode",Toast.LENGTH_SHORT).show()
     }
 }
