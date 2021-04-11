@@ -120,4 +120,12 @@ object HomeData {
             weight = 5.2F
         )
     )
+
+    fun getbasketItem() : MutableList<BasketItem> {
+        val mutableList = mutableListOf<BasketItem>()
+        for(i in getMutableProduct()){
+            mutableList.add(BasketItem(i,1))
+        }
+        return mutableList
+    }
 }

@@ -142,7 +142,9 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="end|top"
                 android:layout_margin="10dp"
-                android:text="40,84 кг"
+                android:maxLines="1"
+                android:text="40,84 234кг"
+                android:maxWidth="82dp"
                 android:textColor="@color/black"
                 android:textSize="15sp" />
 
