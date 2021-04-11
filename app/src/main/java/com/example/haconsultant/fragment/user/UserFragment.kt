@@ -10,7 +10,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.haconsultant.R
 import kotlinx.android.synthetic.main.fragment_user.*
-import kotlinx.android.synthetic.main.home_item_product.view.*
 import kotlinx.android.synthetic.main.item_arrow_text.view.*
 
 class UserFragment : Fragment() {

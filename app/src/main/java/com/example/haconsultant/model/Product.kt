@@ -6,5 +6,6 @@ data class Product(
     val imageUrl:String?,
     val prices: Int,
     val evaluation: Float,
-    val sizeReviews : Int
+    val sizeReviews : Int,
+    val weight : Float
 )

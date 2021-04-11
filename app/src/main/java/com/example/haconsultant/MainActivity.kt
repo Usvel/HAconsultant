@@ -3,6 +3,10 @@ package com.example.haconsultant
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.lifecycle.ViewModelProvider
+import com.example.haconsultant.fragment.basket.BasketFragment
+import com.example.haconsultant.fragment.basket.BasketFragmentInteractor
+import com.example.haconsultant.fragment.basket.BasketViewModel
 import com.example.haconsultant.fragment.catalog.SearchFragment
 import com.example.haconsultant.fragment.catalog.SearchFragmentInteractor
 import com.example.haconsultant.fragment.home.HomeFragment
@@ -10,14 +14,20 @@ import com.example.haconsultant.fragment.home.HomeFragmentInteractor
 import com.example.haconsultant.fragment.user.UserFragment
 import com.example.haconsultant.fragment.user.UserFragmentInteractor
 import com.example.haconsultant.model.HomeCatalog
+import com.example.haconsultant.model.HomeData
 import com.example.haconsultant.model.Product
 import kotlinx.android.synthetic.main.activity_main.*
 
-class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragmentInteractor, UserFragmentInteractor {
+class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragmentInteractor, UserFragmentInteractor, BasketFragmentInteractor {
 
     private val homeFragment = HomeFragment()
     private val searchFragment = SearchFragment()
     private val userFragment = UserFragment()
+    private val basketFragment = BasketFragment()
+
+    val basketViewModel: BasketViewModel by lazy {
+        ViewModelProvider(this).get(BasketViewModel::class.java)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,6 +44,7 @@ class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragment
                     true
                 }
                 R.id.navigation_basket -> {
+                    supportFragmentManager.beginTransaction().replace(R.id.navHostContainer,basketFragment).commit()
                     true
                 }
                 R.id.navigation_user -> {
@@ -72,5 +83,13 @@ class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragment
 
     override fun onUserOpenCameraQrCode() {
         Toast.makeText(this,"QrCode",Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onBasketOpenItem(product: Product) {
+        Toast.makeText(this,product.name,Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onBasketCheckout() {
+        Toast.makeText(this,"Checkout",Toast.LENGTH_SHORT).show()
     }
 }
