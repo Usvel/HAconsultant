@@ -73,7 +73,7 @@ object HomeData {
         )
     )
 
-    fun getMutableProduct() : MutableList<Product> = mutableListOf(
+    fun getMutableProduct(): MutableList<Product> = mutableListOf(
         Product(
             name = "Смартфон Apple iPhone XR 128GB Black",
             codeVendor = "2220000",
@@ -121,11 +121,16 @@ object HomeData {
         )
     )
 
-    fun getbasketItem() : MutableList<BasketItem> {
+    fun getbasketItem(): MutableList<BasketItem> {
         val mutableList = mutableListOf<BasketItem>()
-        for(i in getMutableProduct()){
-            mutableList.add(BasketItem(i,1))
+        for (i in getMutableProduct()) {
+            mutableList.add(BasketItem(i, 1))
         }
         return mutableList
     }
+
+    fun getLinsPage() = listOf<String>(
+        "https://static.eldorado.ru/photos/71/715/665/96/new_71566596_l_1605093913.jpeg",
+        "https://static.eldorado.ru/photos/71/715/908/88/new_71590888_l_1616156634.jpeg",
+        "https://static.eldorado.ru/photos/71/713/748/92/new_71374892_l_1529342853.jpeg")
 }

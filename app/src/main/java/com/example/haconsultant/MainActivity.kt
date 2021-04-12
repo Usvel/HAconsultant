@@ -11,6 +11,7 @@ import com.example.haconsultant.fragment.catalog.SearchFragment
 import com.example.haconsultant.fragment.catalog.SearchFragmentInteractor
 import com.example.haconsultant.fragment.home.HomeFragment
 import com.example.haconsultant.fragment.home.HomeFragmentInteractor
+import com.example.haconsultant.fragment.product.ProductFragment
 import com.example.haconsultant.fragment.user.UserFragment
 import com.example.haconsultant.fragment.user.UserFragmentInteractor
 import com.example.haconsultant.model.HomeCatalog
@@ -24,7 +25,7 @@ class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragment
     private val searchFragment = SearchFragment()
     private val userFragment = UserFragment()
     private val basketFragment = BasketFragment()
-
+    private val productFragment = ProductFragment()
     val basketViewModel: BasketViewModel by lazy {
         ViewModelProvider(this).get(BasketViewModel::class.java)
     }
@@ -54,6 +55,7 @@ class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragment
                 else -> false
             }
         }
+        supportFragmentManager.beginTransaction().replace(R.id.navHostContainer, productFragment).commit()
         //startActivity(this, ScrollingActivity::class.java)
     }
 

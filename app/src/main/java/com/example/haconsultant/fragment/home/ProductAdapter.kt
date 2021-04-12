@@ -73,7 +73,6 @@ class ProductViewHolder(private val viewProduct: View, private val onClick: (Pro
             viewProduct.starProduct.setImageResource(R.drawable.ic_baseline_star_grey_24)
             viewProduct.evaluationProduct.isVisible = false
             viewProduct.sizeReviewsProduct.text = "Нет отзывов"
-
         } else {
             viewProduct.starProduct.setImageResource(R.drawable.ic_baseline_star_red_24)
             viewProduct.evaluationProduct.isVisible = true

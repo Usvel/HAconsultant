@@ -22,4 +22,9 @@
     <style name="Theme.HAconsultant.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="Theme.HAconsultant.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="ProductRotationBar" parent="Theme.AppCompat">
+        <item name="colorControlNormal">@color/design_default_color_primary</item>
+        <item name="colorControlActivated">@color/design_default_color_primary</item>
+    </style>
 </resources>
