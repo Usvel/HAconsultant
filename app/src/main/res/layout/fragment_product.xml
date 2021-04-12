@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".fragment.product.ProductFragment">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="5dp">
+
+            <ImageButton
+                android:id="@+id/searchBtnBack"
+                android:layout_width="60dp"
+                android:layout_height="30dp"
+                android:layout_gravity="start|center"
+                android:background="@color/design_default_color_primary"
+                android:src="@drawable/ic_baseline_keyboard_backspace_24" />
+        </FrameLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+
+
+</LinearLayout>
