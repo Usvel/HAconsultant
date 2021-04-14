@@ -4,16 +4,16 @@ object HomeData {
     fun getProduct() = listOf(
         Product(
             name = "Смартфон Apple iPhone XR 128GB Black",
-            codeVendor = "2220000",
+            codeVendor = "2220001",
             imageUrl = "https://static.eldorado.ru/photos/71/715/665/96/new_71566596_l_1605093913.jpeg",
             prices = 2000,
-            evaluation = 2.3F,
-            sizeReviews = 2,
+            evaluation = 4.3F,
+            sizeReviews = 23,
             weight = 2.2F
         ),
         Product(
             name = "Игровая приставка Sony PlayStation 5",
-            codeVendor = "2220000",
+            codeVendor = "2220002",
             imageUrl = "https://static.eldorado.ru/photos/71/715/399/84/new_71539984_l_1600344297.jpeg",
             prices = 50000,
             evaluation = 2.3F,
@@ -22,7 +22,7 @@ object HomeData {
         ),
         Product(
             name = "Беспроводные наушники с микрофоном Apple AirPods (2019)",
-            codeVendor = "2220000",
+            codeVendor = "2220003",
             imageUrl = "https://static.eldorado.ru/photos/71/715/117/62/new_71511762_l_1554719994.jpeg",
             prices = 2000,
             evaluation = 2.3F,
@@ -31,7 +31,7 @@ object HomeData {
         ),
         Product(
             name = "Название 4",
-            codeVendor = "2220000",
+            codeVendor = "2220004",
             imageUrl = "https://static.eldorado.ru/photos/71/713/748/92/new_71374892_l_1529342853.jpeg",
             prices = 2000,
             evaluation = 2.3F,
@@ -40,7 +40,7 @@ object HomeData {
         ),
         Product(
             name = "Название 5",
-            codeVendor = "2220000",
+            codeVendor = "2220005",
             imageUrl = "https://static.eldorado.ru/photos/71/715/908/88/new_71590888_l_1616156634.jpeg",
             prices = 2000,
             evaluation = 2.3F,
@@ -76,7 +76,7 @@ object HomeData {
     fun getMutableProduct(): MutableList<Product> = mutableListOf(
         Product(
             name = "Смартфон Apple iPhone XR 128GB Black",
-            codeVendor = "2220000",
+            codeVendor = "2220001",
             imageUrl = "https://static.eldorado.ru/photos/71/715/665/96/new_71566596_l_1605093913.jpeg",
             prices = 2000,
             evaluation = 2.3F,
@@ -85,7 +85,7 @@ object HomeData {
         ),
         Product(
             name = "Игровая приставка Sony PlayStation 5",
-            codeVendor = "2220000",
+            codeVendor = "2220002",
             imageUrl = "https://static.eldorado.ru/photos/71/715/399/84/new_71539984_l_1600344297.jpeg",
             prices = 50000,
             evaluation = 2.3F,
@@ -94,7 +94,7 @@ object HomeData {
         ),
         Product(
             name = "Беспроводные наушники с микрофоном Apple AirPods (2019)",
-            codeVendor = "2220000",
+            codeVendor = "2220003",
             imageUrl = "https://static.eldorado.ru/photos/71/715/117/62/new_71511762_l_1554719994.jpeg",
             prices = 2000,
             evaluation = 2.3F,
@@ -103,7 +103,7 @@ object HomeData {
         ),
         Product(
             name = "Название 4",
-            codeVendor = "2220000",
+            codeVendor = "2220004",
             imageUrl = "https://static.eldorado.ru/photos/71/713/748/92/new_71374892_l_1529342853.jpeg",
             prices = 2000,
             evaluation = 2.3F,
@@ -112,7 +112,7 @@ object HomeData {
         ),
         Product(
             name = "Название 5",
-            codeVendor = "2220000",
+            codeVendor = "2220005",
             imageUrl = "https://static.eldorado.ru/photos/71/715/908/88/new_71590888_l_1616156634.jpeg",
             prices = 2000,
             evaluation = 2.3F,

@@ -11,10 +11,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.haconsultant.R
-import com.example.haconsultant.fragment.home.HomeFragmentInteractor
-import com.example.haconsultant.fragment.home.HomeViewModel
 import com.example.haconsultant.fragment.home.ProductAdapter
-import com.example.haconsultant.model.HomeData
 import kotlinx.android.synthetic.main.fragment_search.*
 
 class SearchFragment : Fragment() {

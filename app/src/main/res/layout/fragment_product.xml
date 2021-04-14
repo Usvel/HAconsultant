@@ -17,11 +17,13 @@
             android:layout_margin="5dp">
 
             <ImageButton
-                android:id="@+id/searchBtnBack"
+                android:id="@+id/productBtnBack"
                 android:layout_width="60dp"
                 android:layout_height="30dp"
                 android:layout_gravity="start|center"
                 android:background="@color/design_default_color_primary"
+                android:clickable="true"
+                android:focusable="true"
                 android:src="@drawable/ic_baseline_keyboard_backspace_24" />
         </FrameLayout>
     </com.google.android.material.appbar.AppBarLayout>
@@ -295,8 +297,6 @@
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:listitem="@layout/home_item_product" />
             </FrameLayout>
-
-
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

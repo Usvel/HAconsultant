@@ -9,13 +9,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.haconsultant.R
 import com.example.haconsultant.fragment.catalog.SearchDecorationTypeProvider
 import com.example.haconsultant.fragment.catalog.SearchFragmentInteractor
+import com.example.haconsultant.fragment.product.ProductFragmentInteractor
 import com.example.haconsultant.model.Product
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.home_item_product.view.*
 
 class ProductAdapter(
     private val homeFragmentInteractor: HomeFragmentInteractor? = null,
-    private val searchFragmentInteractor: SearchFragmentInteractor? = null
+    private val searchFragmentInteractor: SearchFragmentInteractor? = null,
+    private val productFragmentInteractor: ProductFragmentInteractor? = null
 ) :
     RecyclerView.Adapter<ProductViewHolder>(), SearchDecorationTypeProvider {
 
@@ -27,13 +29,20 @@ class ProductAdapter(
         if (homeFragmentInteractor != null)
             return ProductViewHolder(
                 view,
-                { homeFragmentInteractor?.onHomeOpenItem(it) }
+                { homeFragmentInteractor.onHomeOpenItem(it) }
             )
         else {
-            return ProductViewHolder(
-                view,
-                { searchFragmentInteractor?.onSearchOpenItem(it) }
-            )
+            if (searchFragmentInteractor != null) {
+                return ProductViewHolder(
+                    view,
+                    { searchFragmentInteractor.onSearchOpenItem(it) }
+                )
+            } else {
+                return ProductViewHolder(
+                    view,
+                    { productFragmentInteractor?.onProductOpenItem(it)}
+                )
+            }
         }
     }
 

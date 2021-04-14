@@ -39,6 +39,18 @@ class BasketFragment : Fragment(), BasketAdapterInteractor {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        viewModel.status.observe(viewLifecycleOwner, Observer {
+            it.let {
+                when (it) {
+                    BasketStatus.Clear -> {
+                        listEmpty()
+                    }
+                    BasketStatus.Filled -> {
+                        listNoEmpty()
+                    }
+                }
+            }
+        })
         setBasketRecycler()
         basketClear.setOnClickListener {
             viewModel.basketList.value?.clear()
@@ -89,6 +101,16 @@ class BasketFragment : Fragment(), BasketAdapterInteractor {
 
     override fun sizeInZero() {
         viewModel.itmeZero()
+        viewModel.setStatus(BasketStatus.Clear)
+    }
+
+    fun listNoEmpty() {
+        basketClear.isVisible = true
+        bascketNotEmpty.isVisible = true
+        bascketEmpty.isVisible = false
+    }
+
+    fun listEmpty() {
         basketClear.isVisible = false
         bascketNotEmpty.isVisible = false
         bascketEmpty.isVisible = true

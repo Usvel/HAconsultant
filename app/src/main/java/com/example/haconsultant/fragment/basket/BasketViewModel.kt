@@ -12,15 +12,22 @@ class BasketViewModel : ViewModel() {
     private val _basketList: MutableLiveData<MutableList<BasketItem>> = MutableLiveData()
     private val _price: MutableLiveData<Int> = MutableLiveData()
     private val _weight: MutableLiveData<Float> = MutableLiveData()
+    private val _status: MutableLiveData<BasketStatus> = MutableLiveData()
 
     val basketList: LiveData<MutableList<BasketItem>> = _basketList
     val price: LiveData<Int> = _price
     val weight: LiveData<Float> = _weight
+    val status: LiveData<BasketStatus> = _status
 
     init {
         _basketList.value = HomeData.getbasketItem()
         _price.value = 0
         _weight.value = 0F
+        _status.value = BasketStatus.Filled
+    }
+
+    fun addProduct(product: Product) {
+        _basketList.value?.add(BasketItem(product,1))
     }
 
     fun itmeZero() {
@@ -37,4 +44,13 @@ class BasketViewModel : ViewModel() {
         _price.value = price
         _weight.value = weight
     }
+
+    fun setStatus(status: BasketStatus){
+        _status.value = status
+    }
+}
+
+enum class BasketStatus(){
+    Clear,
+    Filled
 }
