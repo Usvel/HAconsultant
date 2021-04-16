@@ -1,6 +1,5 @@
-package com.example.haconsultant.fragment.catalog
+package com.example.haconsultant.fragment.search
 
-import com.example.haconsultant.model.HomeCatalog
 import com.example.haconsultant.model.Product
 
 interface SearchFragmentInteractor {

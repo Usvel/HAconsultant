@@ -1,4 +1,4 @@
-package com.example.haconsultant.fragment.catalog
+package com.example.haconsultant.fragment.search
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData

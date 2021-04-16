@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragment.catalog.SearchFragment">
+    tools:context=".fragment.search.SearchFragment">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
@@ -43,7 +43,7 @@
                 android:layout_gravity="center"
                 android:text="Ноутбуки"
                 android:textColor="@color/white"
-                android:textSize="20sp" />
+                android:textSize="22sp" />
 
             <ImageButton
                 android:id="@+id/searchBtnSearchProduct"
@@ -142,8 +142,8 @@
                         android:layout_weight="1"
                         android:background="@drawable/search_text_corners_shape"
                         android:gravity="center"
-                        android:textColor="@color/white"
                         android:text="Все товары"
+                        android:textColor="@color/white"
                         android:textSize="16sp" />
 
                     <TextView
@@ -152,11 +152,11 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="5dp"
                         android:layout_marginEnd="5dp"
-                        android:background="@drawable/search_text_corners_shape_gray"
-                        android:textColor="@color/white"
                         android:layout_weight="1"
+                        android:background="@drawable/search_text_corners_shape_gray"
                         android:gravity="center"
                         android:text="В магазине"
+                        android:textColor="@color/white"
                         android:textSize="16sp" />
 
                     <TextView
@@ -166,10 +166,10 @@
                         android:layout_marginStart="5dp"
                         android:layout_marginEnd="5dp"
                         android:layout_weight="1"
-                        android:gravity="center"
                         android:background="@drawable/search_text_corners_shape_gray"
-                        android:textColor="@color/white"
+                        android:gravity="center"
                         android:text="На складе"
+                        android:textColor="@color/white"
                         android:textSize="16sp" />
                 </LinearLayout>
             </LinearLayout>
@@ -184,8 +184,9 @@
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/searchRecycler"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:layout_gravity="center"
                 app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                 tools:listitem="@layout/home_item_product" />
         </LinearLayout>

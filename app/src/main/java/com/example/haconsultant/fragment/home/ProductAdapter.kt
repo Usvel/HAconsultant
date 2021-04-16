@@ -7,8 +7,8 @@ import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.example.haconsultant.R
-import com.example.haconsultant.fragment.catalog.SearchDecorationTypeProvider
-import com.example.haconsultant.fragment.catalog.SearchFragmentInteractor
+import com.example.haconsultant.fragment.search.SearchDecorationTypeProvider
+import com.example.haconsultant.fragment.search.SearchFragmentInteractor
 import com.example.haconsultant.fragment.product.ProductFragmentInteractor
 import com.example.haconsultant.model.Product
 import com.squareup.picasso.Picasso

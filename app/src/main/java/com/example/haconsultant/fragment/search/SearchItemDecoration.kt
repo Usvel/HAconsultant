@@ -1,16 +1,15 @@
-package com.example.haconsultant.fragment.catalog
+package com.example.haconsultant.fragment.search
 
 import android.graphics.Rect
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
-import com.example.haconsultant.fragment.home.HomeDecorationTypeProvider
 import com.example.haconsultant.fragment.home.dpToPx
 
 class SearchItemDecoration : RecyclerView.ItemDecoration() {
 
     companion object {
-        private val PADDING_LEFT_ITEM = 15
-        private val PADDING_RIGHT_ITEM = 5
+        private val PADDING_LEFT_ITEM = 0
+        private val PADDING_RIGHT_ITEM = 15
     }
 
     override fun getItemOffsets(

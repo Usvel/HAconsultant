@@ -9,7 +9,12 @@ object HomeData {
             prices = 2000,
             evaluation = 4.3F,
             sizeReviews = 23,
-            weight = 2.2F
+            weight = 2.2F,
+            listImage = listOf(
+                "https://static.eldorado.ru/photos/71/715/665/78/new_71566578_l_1605089603.jpeg/resize/380x240/",
+                "https://static.eldorado.ru/photos/71/715/665/78/new_71566578_l_1605089623.jpeg/resize/380x240/",
+                "https://static.eldorado.ru/photos/71/715/665/78/new_71566578_l_1605089643.jpeg/resize/380x240/"
+            )
         ),
         Product(
             name = "Игровая приставка Sony PlayStation 5",
@@ -18,7 +23,13 @@ object HomeData {
             prices = 50000,
             evaluation = 2.3F,
             sizeReviews = 2,
-            weight = 5.2F
+            weight = 5.2F,
+            listImage = listOf(
+                "https://img.mvideo.ru/Pdb/40073270b.jpg",
+                "https://img.mvideo.ru/Pdb/40073270b1.jpg",
+                "https://img.mvideo.ru/Pdb/40073270b2.jpg",
+                "https://img.mvideo.ru/Pdb/40073270b3.jpg"
+            )
         ),
         Product(
             name = "Беспроводные наушники с микрофоном Apple AirPods (2019)",
@@ -27,7 +38,13 @@ object HomeData {
             prices = 2000,
             evaluation = 2.3F,
             sizeReviews = 0,
-            weight = 5.2F
+            weight = 5.2F,
+            listImage = listOf(
+                "https://static.eldorado.ru/photos/71/715/117/62/new_71511762_l_1554719994.jpeg/resize/380x240/",
+                "https://static.eldorado.ru/photos/71/715/117/62/new_71511762_l_1554720014.jpeg/resize/380x240/",
+                "https://static.eldorado.ru/photos/71/715/117/62/new_71511762_l_1554720096.jpeg/resize/380x240/",
+                "https://static.eldorado.ru/photos/71/715/117/62/new_71511762_l_1554720112.jpeg/resize/380x240/"
+            )
         ),
         Product(
             name = "Название 4",
@@ -36,7 +53,10 @@ object HomeData {
             prices = 2000,
             evaluation = 2.3F,
             sizeReviews = 0,
-            weight = 5.2F
+            weight = 5.2F,
+            listImage = listOf(
+                "https://static.eldorado.ru/photos/71/713/748/92/new_71374892_l_1529342853.jpeg"
+            )
         ),
         Product(
             name = "Название 5",
@@ -45,7 +65,10 @@ object HomeData {
             prices = 2000,
             evaluation = 2.3F,
             sizeReviews = 2,
-            weight = 5.2F
+            weight = 5.2F,
+            listImage = listOf(
+                "https://static.eldorado.ru/photos/71/715/908/88/new_71590888_l_1616156634.jpeg"
+            )
         )
     )
 
@@ -81,7 +104,12 @@ object HomeData {
             prices = 2000,
             evaluation = 2.3F,
             sizeReviews = 2,
-            weight = 2.2F
+            weight = 2.2F,
+            listImage = listOf(
+                "https://static.eldorado.ru/photos/71/715/665/78/new_71566578_l_1605089603.jpeg/resize/380x240/",
+                "https://static.eldorado.ru/photos/71/715/665/78/new_71566578_l_1605089623.jpeg/resize/380x240/",
+                "https://static.eldorado.ru/photos/71/715/665/78/new_71566578_l_1605089643.jpeg/resize/380x240/"
+            )
         ),
         Product(
             name = "Игровая приставка Sony PlayStation 5",
@@ -90,7 +118,13 @@ object HomeData {
             prices = 50000,
             evaluation = 2.3F,
             sizeReviews = 2,
-            weight = 5.2F
+            weight = 5.2F,
+            listImage = listOf(
+                "https://img.mvideo.ru/Pdb/40073270b.jpg",
+                "https://img.mvideo.ru/Pdb/40073270b1.jpg",
+                "https://img.mvideo.ru/Pdb/40073270b2.jpg",
+                "https://img.mvideo.ru/Pdb/40073270b3.jpg"
+            )
         ),
         Product(
             name = "Беспроводные наушники с микрофоном Apple AirPods (2019)",
@@ -99,7 +133,13 @@ object HomeData {
             prices = 2000,
             evaluation = 2.3F,
             sizeReviews = 0,
-            weight = 5.2F
+            weight = 5.2F,
+            listImage = listOf(
+                "https://static.eldorado.ru/photos/71/715/117/62/new_71511762_l_1554719994.jpeg/resize/380x240/",
+                "https://static.eldorado.ru/photos/71/715/117/62/new_71511762_l_1554720014.jpeg/resize/380x240/",
+                "https://static.eldorado.ru/photos/71/715/117/62/new_71511762_l_1554720096.jpeg/resize/380x240/",
+                "https://static.eldorado.ru/photos/71/715/117/62/new_71511762_l_1554720112.jpeg/resize/380x240/"
+            )
         ),
         Product(
             name = "Название 4",
@@ -108,7 +148,10 @@ object HomeData {
             prices = 2000,
             evaluation = 2.3F,
             sizeReviews = 0,
-            weight = 5.2F
+            weight = 5.2F,
+            listImage = listOf(
+                "https://static.eldorado.ru/photos/71/713/748/92/new_71374892_l_1529342853.jpeg"
+            )
         ),
         Product(
             name = "Название 5",
@@ -117,7 +160,10 @@ object HomeData {
             prices = 2000,
             evaluation = 2.3F,
             sizeReviews = 2,
-            weight = 5.2F
+            weight = 5.2F,
+            listImage = listOf(
+                "https://static.eldorado.ru/photos/71/715/908/88/new_71590888_l_1616156634.jpeg"
+            )
         )
     )
 
@@ -132,5 +178,44 @@ object HomeData {
     fun getLinsPage() = listOf<String>(
         "https://static.eldorado.ru/photos/71/715/665/96/new_71566596_l_1605093913.jpeg",
         "https://static.eldorado.ru/photos/71/715/908/88/new_71590888_l_1616156634.jpeg",
-        "https://static.eldorado.ru/photos/71/713/748/92/new_71374892_l_1529342853.jpeg")
+        "https://static.eldorado.ru/photos/71/713/748/92/new_71374892_l_1529342853.jpeg"
+    )
+
+    fun getCatalog() =
+        Catalog(
+            "Каталог", listOf(
+                Catalog(
+                    "Телефоны",
+                    listOf<Catalog>(
+                        Catalog("Смартфоны", null),
+                        Catalog("Кнопочные", null),
+                        Catalog("Домашние", null)
+                    )
+                ),
+                Catalog(
+                    "Телевизоры",
+                    listOf<Catalog>(
+                        Catalog("Телевизоры", null),
+                        Catalog("Приставки", null),
+                        Catalog("DVD, Blu-Ray и медиаплееры", null)
+                    )
+                ),
+                Catalog(
+                    "Роутеры",
+                    listOf<Catalog>(
+                        Catalog("Приемники", null),
+                        Catalog("Приставки Wi-fi", null),
+                        Catalog("Коммутаторы", null)
+                    )
+                ),
+                Catalog(
+                    "Роутеры",
+                    listOf<Catalog>(
+                        Catalog("Приемники", null),
+                        Catalog("Приставки Wi-fi", null),
+                        Catalog("Коммутаторы", null)
+                    )
+                )
+            )
+        )
 }

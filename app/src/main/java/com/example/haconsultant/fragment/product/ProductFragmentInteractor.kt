@@ -9,4 +9,5 @@ interface ProductFragmentInteractor {
     fun openAllSubjects()
     fun onProductBack()
     fun onProductOpenItem(product: Product)
+    fun statusProductr(product: Product): Boolean
 }

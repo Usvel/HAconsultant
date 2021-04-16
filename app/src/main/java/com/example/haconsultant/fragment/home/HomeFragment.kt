@@ -11,8 +11,16 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.haconsultant.R
 import kotlinx.android.synthetic.main.fragment_home.*
+import kotlinx.android.synthetic.main.fragment_product.*
 
 class HomeFragment : Fragment() {
+
+    private var positionScroll = 0
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        retainInstance = true;
+    }
 
     val viewModel: HomeViewModel by lazy {
         ViewModelProvider(requireActivity()).get(HomeViewModel::class.java)
@@ -57,6 +65,7 @@ class HomeFragment : Fragment() {
                 fragmentInteractor?.onHomeOpenSerch()
             }
         }
+        homeScrollView.scrollTo(0, positionScroll)
     }
 
     fun setNewRecycler() {
@@ -88,6 +97,11 @@ class HomeFragment : Fragment() {
         })
         homeRecyclerСatalog.adapter = homeCatalogAdapter
         homeRecyclerСatalog.addItemDecoration(HomeCatalogItemDecoration())
+    }
+
+    override fun onStop() {
+        positionScroll = homeScrollView.getScrollY()
+        super.onStop()
     }
 
     override fun onDestroy() {

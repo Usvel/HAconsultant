@@ -3,37 +3,34 @@ package com.example.haconsultant.fragment.product
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.viewpager.widget.ViewPager
-import androidx.viewpager2.widget.ViewPager2
+import androidx.fragment.app.Fragment
 import com.example.haconsultant.R
-import com.example.haconsultant.fragment.home.HomeCatalogAdapter
-import com.example.haconsultant.fragment.home.HomeFragmentInteractor
 import com.example.haconsultant.fragment.home.ProductAdapter
 import com.example.haconsultant.model.HomeData
 import com.example.haconsultant.model.Product
 import kotlinx.android.synthetic.main.fragment_product.*
 
 class ProductFragment : Fragment() {
-//    val viewModel: ProductViewModel by lazy {
+    //    val viewModel: ProductViewModel by lazy {
 //        ViewModelProvider(requireActivity()).get(ProductViewModel::class.java)
 //    }
+    private var positionScroll = 0
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        retainInstance = true;
+    }
 
     companion object {
         private const val ARG_MESSAGE_PRODUCT = "product"
-        private const val ARG_MESSAGE_STATUS = "product_status"
 
-        fun newInstance(product: Product, statusBasket: Boolean): ProductFragment {
+        fun newInstance(product: Product): ProductFragment {
             val fragment = ProductFragment()
             val arguments = Bundle()
             arguments.putParcelable(ARG_MESSAGE_PRODUCT, product)
-            arguments.putBoolean(ARG_MESSAGE_STATUS, statusBasket)
             fragment.arguments = arguments
             return fragment
         }
@@ -41,7 +38,6 @@ class ProductFragment : Fragment() {
 
     private var recievedProduct: Product? = null
     private var fragmentInteractor: ProductFragmentInteractor? = null
-    private var statusBasketProduct: Boolean? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -56,7 +52,6 @@ class ProductFragment : Fragment() {
     ): View? {
         val view = inflater.inflate(R.layout.fragment_product, container, false)
         recievedProduct = requireArguments().getParcelable<Product>(ARG_MESSAGE_PRODUCT)
-        statusBasketProduct = requireArguments().getBoolean(ARG_MESSAGE_STATUS, false)
         return view
     }
 
@@ -78,16 +73,14 @@ class ProductFragment : Fragment() {
 
         if (recievedProduct != null) {
             productName.text = recievedProduct!!.name
-            productPrise.text = recievedProduct!!.prices.toString()
+            productPrise.text = "${recievedProduct!!.prices} ₽"
             productCodeVendor.text = recievedProduct!!.codeVendor
             productRatingBar.rating = recievedProduct!!.evaluation
-            productSizeReviews.text = recievedProduct!!.sizeReviews.toString()
+            productSizeReviews.text = "Отзовы ${recievedProduct!!.sizeReviews}"
         }
 
-        if (statusBasketProduct != null) {
-            if (statusBasketProduct!!) {
-                productInBasket()
-            }
+        if (fragmentInteractor?.statusProductr(product = recievedProduct!!) == true) {
+            productInBasket()
         }
 
         productBtnInBasket.setOnClickListener {
@@ -108,11 +101,15 @@ class ProductFragment : Fragment() {
         productBtnBack.setOnClickListener {
             fragmentInteractor?.onProductBack()
         }
+
+        productScrollView.scrollTo(0, positionScroll)
     }
 
     private fun setPagerAdapter() {
         val adapter = ProductPagerAdapter()
-        adapter.items = HomeData.getLinsPage()
+        recievedProduct.let {
+            adapter.items = it?.listImage!!
+        }
         productViewPager.adapter = adapter
         productIndicator.setViewPager(productViewPager)
     }
@@ -123,13 +120,19 @@ class ProductFragment : Fragment() {
         productRecycler.adapter = productAdapter
     }
 
+    override fun onStop() {
+        positionScroll = productScrollView.getScrollY()
+        super.onStop()
+    }
+
     override fun onDestroy() {
         fragmentInteractor = null
         productAdapter = null
         super.onDestroy()
     }
 
-    fun productInBasket(){
+
+    fun productInBasket() {
         productBtnInBasket.isEnabled = false
         productBtnInBasket.setBackgroundColor(Color.GRAY)
         productBtnInBasket.text = "Товар в корзине"

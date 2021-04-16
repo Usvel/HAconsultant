@@ -12,9 +12,12 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.haconsultant.R
 import com.example.haconsultant.model.BasketItem
 import kotlinx.android.synthetic.main.fragment_basket.*
+import kotlinx.android.synthetic.main.fragment_product.*
 import java.text.DecimalFormat
 
 class BasketFragment : Fragment(), BasketAdapterInteractor {
+
+    private var positionScroll = 0
 
     private var fragmentInteractor: BasketFragmentInteractor? = null
 
@@ -72,6 +75,7 @@ class BasketFragment : Fragment(), BasketAdapterInteractor {
                 basketPrice.text = "$it ₽"
             }
         })
+        bascketScrollView.scrollTo(0, positionScroll)
     }
 
     fun setBasketRecycler() {
@@ -92,6 +96,11 @@ class BasketFragment : Fragment(), BasketAdapterInteractor {
             }
         })
         basketRecycler.adapter = basketProductAdapter
+    }
+
+    override fun onStop() {
+        positionScroll = bascketScrollView.getScrollY()
+        super.onStop()
     }
 
     override fun onDestroy() {

@@ -11,8 +11,9 @@ data class Product(
     val prices: Int,
     val evaluation: Float,
     val sizeReviews : Int,
-    val weight : Float
-) : Parcelable{
+    val weight : Float,
+    val listImage : List<String>
+) :Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString()!!,
         parcel.readString()!!,
@@ -20,7 +21,8 @@ data class Product(
         parcel.readInt(),
         parcel.readFloat(),
         parcel.readInt(),
-        parcel.readFloat()
+        parcel.readFloat(),
+        parcel.createStringArrayList()!!
     ) {
     }
 
@@ -32,6 +34,7 @@ data class Product(
         parcel.writeFloat(evaluation)
         parcel.writeInt(sizeReviews)
         parcel.writeFloat(weight)
+        parcel.writeStringList(listImage)
     }
 
     override fun describeContents(): Int {
