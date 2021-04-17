@@ -1,8 +1,11 @@
 package com.example.haconsultant
 
+import android.Manifest
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
+import androidx.core.app.ActivityCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -13,6 +16,7 @@ import com.example.haconsultant.fragment.basket.BasketFragmentInteractor
 import com.example.haconsultant.fragment.basket.BasketStatus
 import com.example.haconsultant.fragment.basket.BasketViewModel
 import com.example.haconsultant.fragment.camera.CameraFragment
+import com.example.haconsultant.fragment.camera.CameraFragmentInteractor
 import com.example.haconsultant.fragment.catalog.CatalogFragment
 import com.example.haconsultant.fragment.catalog.CatalogFragmentInteractor
 import com.example.haconsultant.fragment.search.SearchFragment
@@ -29,6 +33,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragmentInteractor,
     UserFragmentInteractor, BasketFragmentInteractor, CatalogFragmentInteractor,
+    CameraFragmentInteractor,
     ProductFragmentInteractor {
 
 //    private val homeFragment = HomeFragment()
@@ -281,5 +286,21 @@ class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragment
         backStackLiveData.removeQueueFragment()
         supportFragmentManager.beginTransaction()
             .replace(R.id.navHostContainer, backStackLiveData.lastQeueFragment()!!).commit()
+    }
+
+    override fun onCameraBack() {
+        backStackLiveData.removeQueueFragment()
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.navHostContainer, backStackLiveData.lastQeueFragment()!!).commit()
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Разрешение").setMessage("Для сканирование Qr-кода нужна камера")
+            .setNegativeButton("Боюсь не дам") { dialog, id -> dialog.cancel() }
+            .setPositiveButton("Ок") { dialog, id ->
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(Manifest.permission.CAMERA),
+                    10
+                )
+            }.show()
     }
 }

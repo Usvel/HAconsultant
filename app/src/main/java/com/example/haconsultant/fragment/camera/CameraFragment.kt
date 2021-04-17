@@ -22,6 +22,7 @@ import com.example.haconsultant.R
 import com.example.haconsultant.fragment.BackStackLiveData
 import com.example.haconsultant.fragment.StatusCamera
 import com.example.haconsultant.fragment.basket.BasketViewModel
+import com.example.haconsultant.fragment.catalog.CatalogFragmentInteractor
 import kotlinx.android.synthetic.main.fragment_camera.*
 import java.io.File
 import java.text.SimpleDateFormat
@@ -35,7 +36,8 @@ class CameraFragment : Fragment() {
         ViewModelProvider(requireActivity()).get(BackStackLiveData::class.java)
     }
 
-    private lateinit var outputDirectory: File
+    private var fragmentInteractor: CameraFragmentInteractor? = null
+
     private lateinit var cameraExecutor: ExecutorService
 
     private lateinit var safeContext: Context
@@ -43,6 +45,9 @@ class CameraFragment : Fragment() {
     override fun onAttach(context: Context) {
         super.onAttach(context)
         safeContext = context
+        if (context is CameraFragmentInteractor) {
+            fragmentInteractor = context
+        }
     }
 
 
@@ -64,11 +69,7 @@ class CameraFragment : Fragment() {
         if (allPermissionsGranted()) {
             startCamera()
         } else {
-            ActivityCompat.requestPermissions(
-                requireActivity(),
-                REQUIRED_PERMISSIONS,
-                REQUEST_CODE_PERMISSIONS
-            )
+            requestPermissions(REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS)
         }
 
         cameraExecutor = Executors.newSingleThreadExecutor()
@@ -132,6 +133,21 @@ class CameraFragment : Fragment() {
         super.onDestroy()
         cameraExecutor.shutdown()
         viewModel.setStatusCamera(StatusCamera.CameraOff)
+    }
+
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        if (requestCode == REQUEST_CODE_PERMISSIONS) {
+            if (allPermissionsGranted()) {
+                startCamera()
+            } else {
+                fragmentInteractor?.onCameraBack()
+            }
+        }
     }
 
     companion object {
