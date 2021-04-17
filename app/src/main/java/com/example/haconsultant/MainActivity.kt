@@ -3,13 +3,16 @@ package com.example.haconsultant
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.haconsultant.fragment.BackStackLiveData
+import com.example.haconsultant.fragment.StatusCamera
 import com.example.haconsultant.fragment.StatusFragment
 import com.example.haconsultant.fragment.basket.BasketFragmentInteractor
 import com.example.haconsultant.fragment.basket.BasketStatus
 import com.example.haconsultant.fragment.basket.BasketViewModel
+import com.example.haconsultant.fragment.camera.CameraFragment
 import com.example.haconsultant.fragment.catalog.CatalogFragment
 import com.example.haconsultant.fragment.catalog.CatalogFragmentInteractor
 import com.example.haconsultant.fragment.search.SearchFragment
@@ -99,6 +102,19 @@ class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragment
         })
         //supportFragmentManager.get
         //startActivity(this, ScrollingActivity::class.java)
+
+        backStackLiveData.statusCamera.observe(this, androidx.lifecycle.Observer {
+            it.let {
+                when (it) {
+                    StatusCamera.CameraOn -> {
+                        bottomNavigation.isVisible = false
+                    }
+                    StatusCamera.CameraOff -> {
+                        bottomNavigation.isVisible = true
+                    }
+                }
+            }
+        })
     }
 
     private fun setStarFragment() {
@@ -122,6 +138,9 @@ class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragment
     }
 
     override fun onHomeOpenCameraQrCode() {
+        backStackLiveData.addQueueFragment(CameraFragment())
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.navHostContainer, backStackLiveData.lastQeueFragment()!!).commit()
         Toast.makeText(this, "QrCode", Toast.LENGTH_SHORT).show()
     }
 
