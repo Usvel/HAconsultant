@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.view.isVisible
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.haconsultant.fragment.BackStackLiveData
@@ -19,6 +20,7 @@ import com.example.haconsultant.fragment.camera.CameraFragment
 import com.example.haconsultant.fragment.camera.CameraFragmentInteractor
 import com.example.haconsultant.fragment.catalog.CatalogFragment
 import com.example.haconsultant.fragment.catalog.CatalogFragmentInteractor
+import com.example.haconsultant.fragment.home.HomeFragment
 import com.example.haconsultant.fragment.search.SearchFragment
 import com.example.haconsultant.fragment.search.SearchFragmentInteractor
 import com.example.haconsultant.fragment.home.HomeFragmentInteractor
@@ -122,6 +124,20 @@ class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragment
         })
     }
 
+    private fun backFragment() {
+        backStackLiveData.removeQueueFragment()
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.navHostContainer, backStackLiveData.lastQeueFragment()!!).commit()
+    }
+
+    private fun addFragment(fragment: Fragment) {
+        backStackLiveData.addQueueFragment(fragment)
+        supportFragmentManager.beginTransaction().replace(
+            R.id.navHostContainer,
+            backStackLiveData.lastQeueFragment()!!
+        ).commit()
+    }
+
     private fun setStarFragment() {
         backStackLiveData.clearQueueFragment()
         supportFragmentManager.beginTransaction()
@@ -131,11 +147,7 @@ class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragment
 
     override fun onHomeOpenItem(product: Product) {
         val productFragment = ProductFragment.newInstance(product)
-        backStackLiveData.addQueueFragment(productFragment)
-        supportFragmentManager.beginTransaction().replace(
-            R.id.navHostContainer,
-            backStackLiveData.lastQeueFragment()!!
-        ).commit()
+        addFragment(productFragment)
     }
 
     override fun onHomeOpenCatalog(homeCatalog: HomeCatalog) {
@@ -143,31 +155,21 @@ class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragment
     }
 
     override fun onHomeOpenCameraQrCode() {
-        backStackLiveData.addQueueFragment(CameraFragment())
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.navHostContainer, backStackLiveData.lastQeueFragment()!!).commit()
+        addFragment(CameraFragment())
         Toast.makeText(this, "QrCode", Toast.LENGTH_SHORT).show()
     }
 
     override fun onHomeOpenSerch() {
-        backStackLiveData.addQueueFragment(SearchFragment())
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.navHostContainer, backStackLiveData.lastQeueFragment()!!).commit()
+        addFragment(SearchFragment())
     }
 
     override fun onSearchOpenItem(product: Product) {
         val productFragment = ProductFragment.newInstance(product)
-        backStackLiveData.addQueueFragment(productFragment)
-        supportFragmentManager.beginTransaction().replace(
-            R.id.navHostContainer,
-            backStackLiveData.lastQeueFragment()!!
-        ).commit()
+        addFragment(productFragment)
     }
 
     override fun onSearchBack() {
-        backStackLiveData.removeQueueFragment()
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.navHostContainer, backStackLiveData.lastQeueFragment()!!).commit()
+        backFragment()
     }
 
     override fun onUserOpenCameraQrCode() {
@@ -176,11 +178,7 @@ class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragment
 
     override fun onBasketOpenItem(product: Product) {
         val productFragment = ProductFragment.newInstance(product)
-        backStackLiveData.addQueueFragment(productFragment)
-        supportFragmentManager.beginTransaction().replace(
-            R.id.navHostContainer,
-            backStackLiveData.lastQeueFragment()!!
-        ).commit()
+        addFragment(productFragment)
     }
 
     override fun onBasketCheckout() {
@@ -212,18 +210,12 @@ class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragment
     }
 
     override fun onProductBack() {
-        backStackLiveData.removeQueueFragment()
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.navHostContainer, backStackLiveData.lastQeueFragment()!!).commit()
+        backFragment()
     }
 
     override fun onProductOpenItem(product: Product) {
         val productFragment = ProductFragment.newInstance(product)
-        backStackLiveData.addQueueFragment(productFragment)
-        supportFragmentManager.beginTransaction().replace(
-            R.id.navHostContainer,
-            backStackLiveData.lastQeueFragment()!!
-        ).commit()
+        addFragment(productFragment)
     }
 
     override fun statusProductr(product: Product): Boolean {
@@ -239,6 +231,28 @@ class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragment
             }
         }
         return flagBasket
+    }
+
+    override fun onCatalogOpenNext(catalog: Catalog) {
+        if (catalog.listCatalog == null) {
+            addFragment(SearchFragment())
+        } else {
+            val catalogFragment = CatalogFragment.newInstance(catalog)
+            addFragment(catalogFragment)
+        }
+    }
+
+    override fun onCatalogBack() {
+        backFragment()
+    }
+
+    override fun onCameraBack() {
+        backFragment()
+    }
+
+    override fun onCameraOk(string: String) {
+        backFragment()
+        AlertDialog.Builder(this).setTitle("Qr-Code").setMessage(string).show()
     }
 
     override fun onBackPressed() {
@@ -267,40 +281,5 @@ class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragment
             supportFragmentManager.beginTransaction()
                 .replace(R.id.navHostContainer, backStackLiveData.lastQeueFragment()!!).commit()
         }
-    }
-
-    override fun onCatalogOpenNext(catalog: Catalog) {
-        if (catalog.listCatalog == null) {
-            backStackLiveData.addQueueFragment(SearchFragment())
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.navHostContainer, backStackLiveData.lastQeueFragment()!!).commit()
-        } else {
-            val catalogFragment = CatalogFragment.newInstance(catalog)
-            backStackLiveData.addQueueFragment(catalogFragment)
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.navHostContainer, backStackLiveData.lastQeueFragment()!!).commit()
-        }
-    }
-
-    override fun onCatalogBack() {
-        backStackLiveData.removeQueueFragment()
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.navHostContainer, backStackLiveData.lastQeueFragment()!!).commit()
-    }
-
-    override fun onCameraBack() {
-        backStackLiveData.removeQueueFragment()
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.navHostContainer, backStackLiveData.lastQeueFragment()!!).commit()
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle("Разрешение").setMessage("Для сканирование Qr-кода нужна камера")
-            .setNegativeButton("Боюсь не дам") { dialog, id -> dialog.cancel() }
-            .setPositiveButton("Ок") { dialog, id ->
-                ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(Manifest.permission.CAMERA),
-                    10
-                )
-            }.show()
     }
 }

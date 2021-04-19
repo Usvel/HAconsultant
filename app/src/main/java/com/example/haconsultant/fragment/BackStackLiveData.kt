@@ -85,21 +85,22 @@ class BackStackLiveData : ViewModel() {
         }
     }
 
-    fun removeQueueFragment() {
+    fun removeQueueFragment(): Fragment? {
         when (statusFragment.value) {
             StatusFragment.Search -> {
-                _queueFragmenHome.value?.pop()
+                return _queueFragmenHome.value?.pop()
             }
             StatusFragment.Catalog -> {
-                _queueFragmenCatalog.value?.pop()
+                return _queueFragmenCatalog.value?.pop()
             }
             StatusFragment.Basket -> {
-                _queueFragmenBasket.value?.pop()
+                return _queueFragmenBasket.value?.pop()
             }
             StatusFragment.User -> {
-                _queueFragmenUser.value?.pop()
+                return _queueFragmenUser.value?.pop()
             }
         }
+        return null
     }
 
     fun lastQeueFragment(): Fragment? {

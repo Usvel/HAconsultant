@@ -1,8 +1,11 @@
 package com.example.haconsultant.fragment.camera
 
 import android.Manifest
+import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.content.Context
 import android.content.pm.PackageManager
+import android.media.Image
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -11,9 +14,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.camera.core.CameraSelector
-import androidx.camera.core.ImageCapture
-import androidx.camera.core.Preview
+import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -23,8 +24,14 @@ import com.example.haconsultant.fragment.BackStackLiveData
 import com.example.haconsultant.fragment.StatusCamera
 import com.example.haconsultant.fragment.basket.BasketViewModel
 import com.example.haconsultant.fragment.catalog.CatalogFragmentInteractor
+import com.example.haconsultant.model.Product
+import com.google.mlkit.vision.barcode.BarcodeScanner
+import com.google.mlkit.vision.barcode.BarcodeScannerOptions
+import com.google.mlkit.vision.barcode.BarcodeScanning
+import com.google.mlkit.vision.common.InputImage
 import kotlinx.android.synthetic.main.fragment_camera.*
 import java.io.File
+import java.nio.ByteBuffer
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.ExecutorService
@@ -35,6 +42,8 @@ class CameraFragment : Fragment() {
     val viewModel: BackStackLiveData by lazy {
         ViewModelProvider(requireActivity()).get(BackStackLiveData::class.java)
     }
+
+    private var okCamera = 0
 
     private var fragmentInteractor: CameraFragmentInteractor? = null
 
@@ -49,7 +58,6 @@ class CameraFragment : Fragment() {
             fragmentInteractor = context
         }
     }
-
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -74,6 +82,10 @@ class CameraFragment : Fragment() {
 
         cameraExecutor = Executors.newSingleThreadExecutor()
 //        cameraExecutor = Executors.newCachedThreadPool()
+
+        cameraBtnBack.setOnClickListener {
+            fragmentInteractor?.onCameraBack()
+        }
     }
 
     private fun startCamera() {
@@ -91,14 +103,14 @@ class CameraFragment : Fragment() {
                 }
 
 
-            //класс для агализа
-//            val imageAnalyzer = ImageAnalysis.Builder()
-//                    .build()
-//                    .also {
-//                        it.setAnalyzer(cameraExecutor, LuminosityAnalyzer { luma ->
-//                            Log.d(TAG, "Average luminosity: $luma")
-//                        })
-//                    }
+            val imageAnalyzer = ImageAnalysis.Builder()
+                .build()
+                .also {
+                    it.setAnalyzer(
+                        cameraExecutor,
+                        LuminosityAnalyzer() { okCamera++
+                            if (okCamera == 1) fragmentInteractor?.onCameraOk(it) })
+                }
 
             // Select back camera as a default
             val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
@@ -107,15 +119,14 @@ class CameraFragment : Fragment() {
                 // Unbind use cases before rebinding
                 cameraProvider.unbindAll()
 
-                // Bind use cases to camera
-                cameraProvider.bindToLifecycle(
-                    this, cameraSelector, preview
-                )
-                //для анализа
+//                // Bind use cases to camera
 //                cameraProvider.bindToLifecycle(
-//                        this, cameraSelector, preview, imageCapture, imageAnalyzer)
+//                    this, cameraSelector, preview
+//                )
 
-
+                cameraProvider.bindToLifecycle(
+                    this, cameraSelector, preview, imageAnalyzer
+                )
             } catch (exc: Exception) {
                 Log.e(TAG, "Use case binding failed", exc)
             }
@@ -130,9 +141,9 @@ class CameraFragment : Fragment() {
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         cameraExecutor.shutdown()
         viewModel.setStatusCamera(StatusCamera.CameraOff)
+        super.onDestroy()
     }
 
 
@@ -150,31 +161,66 @@ class CameraFragment : Fragment() {
         }
     }
 
+
     companion object {
         private const val TAG = "CameraXBasic"
         private const val REQUEST_CODE_PERMISSIONS = 10
         private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA)
     }
 }
+
 //класс для анализа
-//private class LuminosityAnalyzer(private val listener: LumaListener) : ImageAnalysis.Analyzer {
-//
-//    private fun ByteBuffer.toByteArray(): ByteArray {
-//        rewind()    // Rewind the buffer to zero
-//        val data = ByteArray(remaining())
-//        get(data)   // Copy the buffer into a byte array
-//        return data // Return the byte array
-//    }
-//
-//    override fun analyze(image: ImageProxy) {
-//
-//        val buffer = image.planes[0].buffer
-//        val data = buffer.toByteArray()
-//        val pixels = data.map { it.toInt() and 0xFF }
-//        val luma = pixels.average()
-//
-//        listener(luma)
-//
-//        image.close()
-//    }
-//}
+//Удалить контекст Не забыть
+private class LuminosityAnalyzer(private val onResult: (String) -> Unit) :
+    ImageAnalysis.Analyzer {
+
+    private fun ByteBuffer.toByteArray(): ByteArray {
+        rewind()    // Rewind the buffer to zero
+        val data = ByteArray(remaining())
+        get(data)   // Copy the buffer into a byte array
+        return data // Return the byte array
+    }
+
+    override fun analyze(image: ImageProxy) {
+
+        val buffer = image.planes[0].buffer
+        val data = buffer.toByteArray()
+        val pixels = data.map { it.toInt() and 0xFF }
+        val luma = pixels.average()
+
+        //Log.d("IMAGE", "NEWIMAGE")
+
+        //val options = BarcodeScannerOptions.Builder().setBarcodeFormats().build()
+        //в getСlient(option)
+        val barcodeScanner: BarcodeScanner = BarcodeScanning.getClient()
+        processImageProxy(barcodeScanner, image)
+
+        //image.close()
+    }
+
+
+    @SuppressLint("UnsafeExperimentalUsageError")
+    private fun processImageProxy(
+        barcodeScanner: BarcodeScanner,
+        imageProxy: ImageProxy
+    ) {
+        val inputImage =
+            InputImage.fromMediaImage(imageProxy.image!!, imageProxy.imageInfo.rotationDegrees)
+
+        barcodeScanner.process(inputImage)
+            .addOnSuccessListener { barcodes ->
+                barcodes.forEach {
+                    imageProxy.close()
+                    onResult(it.displayValue)
+                }
+            }
+            .addOnFailureListener {
+                Log.e("IMAGE", it.message)
+            }.addOnCompleteListener {
+                // When the image is from CameraX analysis use case, must call image.close() on received
+                // images when finished using them. Otherwise, new images may not be received or the camera
+                // may stall.
+                imageProxy.close()
+            }
+    }
+}
