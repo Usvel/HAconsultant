@@ -1,8 +1,14 @@
 package com.example.haconsultant
 
+import android.opengl.Visibility
 import android.os.Bundle
 import android.util.Log
+import android.util.TypedValue
+import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.Toast
+import androidx.annotation.Dimension
+import androidx.annotation.Px
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
@@ -14,6 +20,8 @@ import com.example.haconsultant.firebase.api.CatalogApiImpl
 import com.example.haconsultant.fragment.BackStackLiveData
 import com.example.haconsultant.fragment.StatusCamera
 import com.example.haconsultant.fragment.StatusFragment
+import com.example.haconsultant.fragment.additional.AddirionalFragmentInteractor
+import com.example.haconsultant.fragment.additional.AdditionalFragment
 import com.example.haconsultant.fragment.basket.BasketFragmentInteractor
 import com.example.haconsultant.fragment.basket.BasketStatus
 import com.example.haconsultant.fragment.basket.BasketViewModel
@@ -21,7 +29,10 @@ import com.example.haconsultant.fragment.camera.CameraFragment
 import com.example.haconsultant.fragment.camera.CameraFragmentInteractor
 import com.example.haconsultant.fragment.catalog.CatalogFragment
 import com.example.haconsultant.fragment.catalog.CatalogFragmentInteractor
+import com.example.haconsultant.fragment.catalog.CatalogViewModel
 import com.example.haconsultant.fragment.home.HomeFragmentInteractor
+import com.example.haconsultant.fragment.home.HomeViewModel
+import com.example.haconsultant.fragment.home.Status
 import com.example.haconsultant.fragment.product.ProductFragment
 import com.example.haconsultant.fragment.product.ProductFragmentInteractor
 import com.example.haconsultant.fragment.search.SearchFragment
@@ -30,15 +41,20 @@ import com.example.haconsultant.fragment.user.UserFragmentInteractor
 import com.example.haconsultant.model.Catalog
 import com.example.haconsultant.model.HomeCatalog
 import com.example.haconsultant.model.Product
+import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
+import java.util.*
+import java.util.concurrent.TimeUnit
+
 
 class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragmentInteractor,
     UserFragmentInteractor, BasketFragmentInteractor, CatalogFragmentInteractor,
     CameraFragmentInteractor,
-    ProductFragmentInteractor {
+    ProductFragmentInteractor,
+    AddirionalFragmentInteractor {
 
     private val compositeDisposable = CompositeDisposable()
     private val catalogRepository by lazy { CatalogRepository(CatalogApiImpl(context = this)) }
@@ -49,12 +65,21 @@ class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragment
 //    private val basketFragment = BasketFragment()
 //    private var productFragment = ProductFragment()
 
+
     val basketViewModel: BasketViewModel by lazy {
         ViewModelProvider(this).get(BasketViewModel::class.java)
     }
 
     val backStackLiveData: BackStackLiveData by lazy {
         ViewModelProvider(this).get(BackStackLiveData::class.java)
+    }
+
+    val homeModel: HomeViewModel by lazy {
+        ViewModelProvider(this).get(HomeViewModel::class.java)
+    }
+
+    val catalogViewModel: CatalogViewModel by lazy {
+        ViewModelProvider(this).get(CatalogViewModel::class.java)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -114,7 +139,7 @@ class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragment
         })
         //supportFragmentManager.get
         //startActivity(this, ScrollingActivity::class.java)
-
+        var s = Stack<String>()
         backStackLiveData.statusCamera.observe(this, androidx.lifecycle.Observer {
             it.let {
                 when (it) {
@@ -128,13 +153,48 @@ class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragment
             }
         })
 
+        catalogRepository.loadProductr()
         loadCatalog()
+        loadHomeNew()
     }
 
     private fun loadCatalog() {
-        catalogRepository.loadHomeNewsIteam().let {
-            Log.d("RX", it.toString())
-        }
+        val disposable = catalogRepository.startCatalog().subscribeOn(Schedulers.io())
+            .subscribeOn(AndroidSchedulers.mainThread()).subscribe({
+                catalogViewModel.setCatalog(it)
+            }, {
+                AlertDialog.Builder(this)
+                    .setTitle("Ошибка загрузки")
+                    .setMessage(it.message)
+                    .setPositiveButton("ок") { dialog, id ->
+                        dialog.cancel()
+                    }.create()
+                    .show()
+            })
+        compositeDisposable.add(disposable)
+    }
+
+    private fun loadHomeNew() {
+        val mutableList = mutableListOf<Product>()
+        val disposable = catalogRepository.loadHomeNewsIteam()
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                mutableList.add(it)
+                homeModel.setNewList(mutableList)
+                homeModel.setStatusNew(Status.Success)
+            }, {
+                AlertDialog.Builder(this)
+                    .setTitle("Ошибка загрузки")
+                    .setMessage(it.message)
+                    .setPositiveButton("ок") { dialog, id ->
+                        dialog.cancel()
+                    }.create()
+                    .show()
+                homeModel.setStatusNew(Status.Failure)
+            })
+        compositeDisposable.add(disposable)
+
 //        val newDisposable = catalogRepository.loadHomeNewsIteam()
 //            .subscribeOn(Schedulers.io())
 //            .observeOn(AndroidSchedulers.mainThread())
@@ -227,12 +287,14 @@ class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragment
         (backStackLiveData.lastQeueFragment()!! as ProductFragment).productInBasket()
     }
 
-    override fun openAllDescription() {
-        Toast.makeText(this, "AllDescription", Toast.LENGTH_SHORT).show()
+    override fun openAllDescription(text: String) {
+        val addirional = AdditionalFragment.newInstance(text, "Описание")
+        addFragment(addirional)
     }
 
-    override fun openAllFeature() {
-        Toast.makeText(this, "AllFeature", Toast.LENGTH_SHORT).show()
+    override fun openAllFeature(text: String) {
+        val addirional = AdditionalFragment.newInstance(text, "Характеристики")
+        addFragment(addirional)
     }
 
     override fun openAllSubjects() {
@@ -252,6 +314,10 @@ class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragment
         return flagItemInBasket(product)
     }
 
+    override fun loadListProduct(list: List<String>): Flowable<Product> {
+        return catalogRepository.loadListProduct(list)
+    }
+
     private fun flagItemInBasket(product: Product): Boolean {
         var flagBasket = false
         basketViewModel.basketList.value?.forEach {
@@ -263,13 +329,14 @@ class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragment
         return flagBasket
     }
 
-    override fun onCatalogOpenNext(catalog: Catalog) {
-        if (catalog.listCatalog == null) {
-            addFragment(SearchFragment())
-        } else {
-            val catalogFragment = CatalogFragment.newInstance(catalog)
-            addFragment(catalogFragment)
-        }
+    override fun onCatalogOpenNext(catalog: String) {
+
+//        if (catalog.listCatalog == null) {
+//            addFragment(SearchFragment())
+//        } else {
+//            val catalogFragment = CatalogFragment.newInstance(catalog)
+//            addFragment(catalogFragment)
+//        }
     }
 
     override fun onCatalogBack() {
@@ -280,9 +347,59 @@ class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragment
         backFragment()
     }
 
-    override fun onCameraOk(string: String) {
-        backFragment()
-        AlertDialog.Builder(this).setTitle("Qr-Code").setMessage(string).show()
+    override fun onCameraOk(codeVendor: String?, name: String?, password: String?) {
+        when (backStackLiveData.statusFragment.value) {
+            StatusFragment.Search -> {
+                backStackLiveData.removeQueueFragment()
+                if (codeVendor != null) {
+                    val layoutInflater = this.layoutInflater
+                    val dialog = AlertDialog.Builder(this)
+                        .setView(layoutInflater.inflate(R.layout.custom_dialog, null)).show()
+                    dialog.window?.setLayout(dpToPx(100), dpToPx(100))
+                    dialog.show()
+
+                    val disposable =
+                        catalogRepository.openCodeProduct(codeVendor).subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe({ product ->
+                                val productFragment = ProductFragment.newInstance(product)
+                                addFragment(productFragment)
+                                dialog.dismiss()
+                            }, {
+                                dialog.dismiss()
+                                supportFragmentManager.beginTransaction()
+                                    .replace(
+                                        R.id.navHostContainer,
+                                        backStackLiveData.lastQeueFragment()!!
+                                    ).commit()
+                                AlertDialog.Builder(this).setTitle("Ошибка")
+                                    .setMessage(it.message).show()
+                            })
+                    compositeDisposable.add(disposable)
+                } else {
+                    supportFragmentManager.beginTransaction()
+                        .replace(
+                            R.id.navHostContainer,
+                            backStackLiveData.lastQeueFragment()!!
+                        ).commit()
+                    AlertDialog.Builder(this).setTitle("Qr-Code")
+                        .setMessage("Qr-code от пользователя").show()
+                }
+            }
+            StatusFragment.User -> {
+                if (name != null && password != null) {
+
+                } else {
+                    AlertDialog.Builder(this).setTitle("Qr-Code").setMessage("Qr-code от продукта")
+                        .show()
+                }
+            }
+            else -> {
+                AlertDialog.Builder(this).setTitle("Qr-Code").setMessage("Не обработанный кейс")
+                    .show()
+            }
+        }
+
     }
 
     override fun onBackPressed() {
@@ -316,5 +433,17 @@ class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragment
     override fun onStop() {
         compositeDisposable.clear()
         super.onStop()
+    }
+
+    @Px
+    private fun dpToPx(@Dimension(unit = Dimension.DP) dp: Int): Int {
+        val resources = resources
+        val displayMetrics = resources.displayMetrics
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp.toFloat(), displayMetrics)
+            .toInt()
+    }
+
+    override fun onAdditionalBack() {
+        backFragment()
     }
 }

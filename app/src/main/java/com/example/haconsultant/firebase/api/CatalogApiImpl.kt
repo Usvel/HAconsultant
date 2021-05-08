@@ -1,117 +1,227 @@
 package com.example.haconsultant.firebase.api
 
 import android.content.Context
-import android.graphics.PostProcessor
 import android.util.Log
+import com.example.haconsultant.model.CatalogFirestore
 import com.example.haconsultant.model.Product
-import com.google.firebase.firestore.DocumentReference
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.firestore.*
+import io.reactivex.Flowable
 import io.reactivex.Single
+import io.reactivex.SingleEmitter
 
 
-class CatalogApiImpl(context: Context) : CatalogApi {
+class CatalogApiImpl(var context: Context) : CatalogApi {
 
     var db = FirebaseFirestore.getInstance()
+
     override fun product(): Single<List<Product>> {
+        feature(priceMin = 3000)
 
-        db.collection("catalog").get().addOnSuccessListener { result ->
-            for (document in result) {
-                document.getDocumentReference("ref")?.addSnapshotListener { value, error ->
-                    Log.d("Firebase", value?.data.toString())
-                }
-                //db.
-                // Log.d("Firebase", "${document.id} => ${document.getDocumentReference("product")}")
-            }
-        }.addOnFailureListener { exception ->
-            Log.w(
-                "Frebase",
-                "Error getting documents.",
-                exception
+        //db.collection("catalog").document("phone").collection()
+
+        db.collection("catalog").get().addOnSuccessListener {
+            catalogNext(
+                (it.documents.get(0).reference).path,
+                it.documents.get(0).getString("name")!!,
+                it.documents.get(0).id
             )
         }
-
-        db.collection("catalog").document("phone").addSnapshotListener { value, error ->
-            (value?.get("ref") as DocumentReference).addSnapshotListener { value, error ->
-                if (value != null) {
-                    Log.d("Firebase", value.data.toString())
-                }
-            }
-
-        }
-
-
         return Single.just(
-            listOf<Product>(
-                Product(
-                    name = "Смартфон Apple iPhone XR 128GB Black",
-                    codeVendor = "2220001",
-                    imageUrl = "https://static.eldorado.ru/photos/71/715/665/96/new_71566596_l_1605093913.jpeg",
-                    prices = 2000,
-                    evaluation = 4.3F,
-                    sizeReviews = 23,
-                    weight = 2.2F,
-                    listImage = listOf(
-                        "https://static.eldorado.ru/photos/71/715/665/78/new_71566578_l_1605089603.jpeg/resize/380x240/",
-                        "https://static.eldorado.ru/photos/71/715/665/78/new_71566578_l_1605089623.jpeg/resize/380x240/",
-                        "https://static.eldorado.ru/photos/71/715/665/78/new_71566578_l_1605089643.jpeg/resize/380x240/"
-                    )
-                ),
-                Product(
-                    name = "Игровая приставка Sony PlayStation 5",
-                    codeVendor = "2220002",
-                    imageUrl = "https://static.eldorado.ru/photos/71/715/399/84/new_71539984_l_1600344297.jpeg",
-                    prices = 50000,
-                    evaluation = 2.3F,
-                    sizeReviews = 2,
-                    weight = 5.2F,
-                    listImage = listOf(
-                        "https://img.mvideo.ru/Pdb/40073270b.jpg",
-                        "https://img.mvideo.ru/Pdb/40073270b1.jpg",
-                        "https://img.mvideo.ru/Pdb/40073270b2.jpg",
-                        "https://img.mvideo.ru/Pdb/40073270b3.jpg"
-                    )
-                )
-            )
+            listOf()
         )
     }
 
-    override fun getHomeNewItems(): List<Product> {
-//        db.collection("home").get().addOnSuccessListener {
-//            for (doc in it){
-//                Log.d("Firebase", doc.id)
-//            }
-//        }
-        var list: MutableList<Product> = mutableListOf()
+    override fun catalogStart(): Single<CatalogFirestore> {
+        val catalog =
+            CatalogFirestore(name = "Каталог", db.collection("catalog").path, null, null, null)
+        return Single.create { emmiter ->
+            db.collection("catalog").get().addOnSuccessListener {
+                it.documents.forEach { document ->
+                    val pathList = arrayListOf<String>()
+                    val nameList = arrayListOf<String>()
+                    val nameBD = arrayListOf<String>()
 
+                    pathList.add(document.reference.path)
+                    nameList.add(document.getString("name")!!)
+                    nameBD.add(document.id)
 
-        db.collection("home").document("new").get().addOnSuccessListener { document ->
-            Log.d("RX", document.data?.size.toString())
-            list = mutableListOf()
-            document.data?.forEach { iteam ->
-                Log.d("RX",iteam.value.toString())
-                (iteam.value as DocumentReference).addSnapshotListener() { value, error ->
-                    val product =
-                        Product(
-                            name = value?.getString("name").toString(),
-                            codeVendor = value?.id.toString(),
-                            imageUrl = value?.getString("imageUrl"),
-                            prices = value?.getLong("prices").let {
-                                it!!.toInt()
-                            },
-                            evaluation = value?.getLong("evaluation")!!.toFloat(),
-                            sizeReviews = value?.getLong("sizeReviews")!!.toInt(),
-                            weight = value?.getLong("weight")!!.toFloat(),
-                            listImage = listOf()
-                        )
-                    list!!.add(product)
-                    Log.d("Rx", list.toString())
+                    catalog.pashlist = pathList
+                    catalog.listName = nameList
+                    catalog.nameBd = nameBD
+
+                    Log.d("catalog", catalog.toString())
+                    emmiter.onSuccess(catalog)
                 }
             }
         }
-        return list
     }
 
+    private fun catalogNext(
+        document: String,
+        name: String,
+        nameBD: String
+    ): Single<CatalogFirestore> {
+        val catalog = CatalogFirestore(name = name, document, null, null, null)
+        return Single.create { emmiter ->
+            db.document(document).collection(nameBD).get().addOnSuccessListener {
 
-    fun setProduct() {}
+                it.documents.forEach { document ->
+                    val pathList = arrayListOf<String>()
+                    val nameList = arrayListOf<String>()
+                    val nameBD = arrayListOf<String>()
+
+                    pathList.add(document.reference.path)
+                    nameList.add(document.getString("name")!!)
+                    nameBD.add(document.id)
+
+                    catalog.pashlist = pathList
+                    catalog.listName = nameList
+                    catalog.nameBd = nameBD
+
+                    emmiter.onSuccess(catalog)
+//                catalog(
+//                    catalog.pashlist!!.get(0),
+//                    catalog.listName!!.get(0),
+//                    catalog.nameBd!!.get(0)
+//                )
+                }
+            }
+        }
+    }
+
+    private fun feature(
+        priceMin: Int? = null,
+        priceMax: Int? = null,
+        manufacturer: String? = null,
+        map: Map<String, String>? = null
+    ) {
+        var zapros = db.collection("product") as Query
+        if (priceMin != null) {
+            zapros = zapros.whereGreaterThanOrEqualTo("prices", priceMin)
+        }
+        if (priceMax != null) {
+            zapros = zapros.whereLessThanOrEqualTo("prices", priceMax)
+        }
+        if (manufacturer != null) {
+            zapros = zapros.whereEqualTo("manufacturer", manufacturer)
+        }
+
+        map?.forEach {
+            zapros = zapros.whereEqualTo(it.key, it.value)
+        }
+    }
+
+    override fun getHomeNewItems(): Flowable<Product>? {
+        return Single.create { emmiter: SingleEmitter<DocumentSnapshot> ->
+            db.collection("home").document("new").get().addOnSuccessListener { document ->
+                if (document != null) {
+                    emmiter.onSuccess(document)
+                } else {
+                    emmiter.onError(RuntimeException("Ошибка загрузки новых товаров"))
+                }
+            }
+        }.flatMapPublisher { document ->
+            val responses: MutableList<Single<Product>> = ArrayList()
+            document.data?.forEach { iteam ->
+                responses.add(Single.create { emmiter: SingleEmitter<Product> ->
+                    (iteam.value as DocumentReference).addSnapshotListener() { value, error ->
+                        if ((error == null) && (value?.data != null)) {
+                            val product = convertToProduct(value)
+                            getListProduct(product.listProduct)
+                            emmiter.onSuccess(product)
+                        } else {
+                            Log.d("RX-e", error.toString())
+
+                        }
+                    }
+                })
+            }
+            Single.concat(responses)
+        }
+    }
+
+    override fun getListProduct(list: List<String>): Flowable<Product>? {
+        return Single.just(list).flatMapPublisher { listadd ->
+            val responses: MutableList<Single<Product>> = ArrayList()
+            listadd.forEach { iteam ->
+                responses.add(Single.create { emmiter: SingleEmitter<Product> ->
+                    db.document(iteam).addSnapshotListener() { value, error ->
+                        if ((error == null) && (value?.data != null)) {
+                            val product = convertToProduct(value)
+                            emmiter.onSuccess(product)
+                        } else {
+                            Log.d("RX-e", error.toString())
+
+                        }
+                    }
+                })
+            }
+            Single.concat(responses)
+        }
+    }
+
+    override fun openProduct(codeVendor: String): Single<Product> {
+        return Single.create { emitter ->
+            db.collection("product").document(codeVendor)
+                .addSnapshotListener { value, error ->
+                    if ((error == null) && (value?.data != null)) {
+                        val product = convertToProduct(value)
+                        emitter.onSuccess(product)
+                    } else {
+                        emitter.onError(java.lang.RuntimeException("Не найден данный продукт $codeVendor"))
+                    }
+                }
+        }
+    }
+
+    private fun convertToProduct(value: DocumentSnapshot): Product {
+        val listProduct: MutableList<String> = ArrayList()
+        (value.get("listProduct") as List<DocumentReference>).forEach {
+            listProduct.add(it.path)
+        }
+
+        val data = value.data!!
+
+        val name = value.getString("name")!!
+        val codeVendor = value.id
+        val imageUrl = value.getString("imageUrl")
+        val prices = value.getLong("prices").let {
+            it!!.toInt()
+        }
+        val evaluation = value.getDouble("evaluation")!!.toFloat()
+        val sizeReviews = value.getLong("sizeReviews")!!.toInt()
+        val weight = value.getDouble("weight")!!.toFloat()
+        val listImage = value.get("listImage") as List<String>
+        val description = value.getString("description")!!
+        val manufacturer = value.getString("manufacturer")!!
+
+        data.remove("name")
+        data.remove("codeVendor")
+        data.remove("imageUrl")
+        data.remove("prices")
+        data.remove("evaluation")
+        data.remove("sizeReviews")
+        data.remove("weight")
+        data.remove("listImage")
+        data.remove("description")
+        data.remove("listProduct")
+        data.remove("manufacturer")
+
+        Log.d("Data", data.toString())
+        val product = Product(
+            name = name,
+            codeVendor = codeVendor,
+            imageUrl = imageUrl,
+            prices = prices,
+            evaluation = evaluation,
+            sizeReviews = sizeReviews,
+            weight = weight,
+            listImage = listImage,
+            description = description,
+            listProduct = listProduct,
+            manufacturer = manufacturer,
+            characteristics = data as HashMap<String, Any>
+        )
+        return product
+    }
 }

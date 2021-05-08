@@ -13,13 +13,32 @@ class HomeViewModel : ViewModel() {
     private val __lastList: MutableLiveData<List<Product>> = MutableLiveData()
     private val _catalogList: MutableLiveData<List<HomeCatalog>> = MutableLiveData()
 
+    private val _statusNewList: MutableLiveData<Status> = MutableLiveData()
+    val statusNewList: LiveData<Status> = _statusNewList
+
     val newList: LiveData<List<Product>> = _newList
     val lastList: LiveData<List<Product>> = __lastList
     val catalogList: LiveData<List<HomeCatalog>> = _catalogList
 
     init {
-        _newList.value = HomeData.getProduct()
+        _newList.value = listOf()
         __lastList.value = HomeData.getProduct()
         _catalogList.value = HomeData.getHomeCatalog()
+        _statusNewList.value = Status.Loading
     }
+
+    fun setNewList(list: List<Product>) {
+        _newList.value = list
+    }
+
+    fun setStatusNew(status: Status){
+        _statusNewList.value = status
+    }
+}
+
+
+enum class Status {
+    Loading,
+    Success,
+    Failure
 }

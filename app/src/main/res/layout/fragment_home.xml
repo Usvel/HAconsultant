@@ -87,6 +87,7 @@
 
 
             <TextView
+                android:id="@+id/homeTextNew"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -94,7 +95,8 @@
                 android:layout_marginBottom="16dp"
                 android:text="Новинки"
                 android:textColor="@color/black"
-                android:textSize="20sp" />
+                android:textSize="20sp"
+                android:visibility="gone" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/homeRecyclerNew"

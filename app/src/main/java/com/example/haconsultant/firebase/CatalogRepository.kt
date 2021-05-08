@@ -1,7 +1,9 @@
 package com.example.haconsultant.firebase
 
 import com.example.haconsultant.firebase.api.CatalogApi
+import com.example.haconsultant.model.CatalogFirestore
 import com.example.haconsultant.model.Product
+import io.reactivex.Flowable
 import io.reactivex.Single
 
 class CatalogRepository(
@@ -10,7 +12,20 @@ class CatalogRepository(
     fun loadProductr(): Single<List<Product>> {
         return api.product()
     }
-    fun loadHomeNewsIteam() : List<Product> {
-        return api.getHomeNewItems()
+
+    fun loadHomeNewsIteam(): Flowable<Product> {
+        return api.getHomeNewItems()!!
+    }
+
+    fun openCodeProduct(codeVendor: String): Single<Product> {
+        return api.openProduct(codeVendor)
+    }
+
+    fun loadListProduct(list: List<String>): Flowable<Product> {
+        return api.getListProduct(list)!!
+    }
+
+    fun startCatalog(): Single<CatalogFirestore> {
+        return api.catalogStart()
     }
 }

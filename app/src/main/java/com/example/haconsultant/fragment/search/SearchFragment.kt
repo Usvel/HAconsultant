@@ -48,27 +48,35 @@ class SearchFragment : Fragment() {
             searchTitle.isVisible = false
             searchBtnSearchProduct.isVisible = false
         }
-        searchAllProduct.setOnClickListener{
+        searchAllProduct.setOnClickListener {
             searchAllProduct.background = context?.getDrawable(R.drawable.search_text_corners_shape)
-            searchInStore.background = context?.getDrawable(R.drawable.search_text_corners_shape_gray)
-            searchInStock.background = context?.getDrawable(R.drawable.search_text_corners_shape_gray)
+            searchInStore.background =
+                context?.getDrawable(R.drawable.search_text_corners_shape_gray)
+            searchInStock.background =
+                context?.getDrawable(R.drawable.search_text_corners_shape_gray)
         }
-        searchInStore.setOnClickListener{
-            searchAllProduct.background = context?.getDrawable(R.drawable.search_text_corners_shape_gray)
+        searchInStore.setOnClickListener {
+            searchAllProduct.background =
+                context?.getDrawable(R.drawable.search_text_corners_shape_gray)
             searchInStore.background = context?.getDrawable(R.drawable.search_text_corners_shape)
-            searchInStock.background = context?.getDrawable(R.drawable.search_text_corners_shape_gray)
+            searchInStock.background =
+                context?.getDrawable(R.drawable.search_text_corners_shape_gray)
         }
-        searchInStock.setOnClickListener{
-            searchAllProduct.background = context?.getDrawable(R.drawable.search_text_corners_shape_gray)
-            searchInStore.background = context?.getDrawable(R.drawable.search_text_corners_shape_gray)
+        searchInStock.setOnClickListener {
+            searchAllProduct.background =
+                context?.getDrawable(R.drawable.search_text_corners_shape_gray)
+            searchInStore.background =
+                context?.getDrawable(R.drawable.search_text_corners_shape_gray)
             searchInStock.background = context?.getDrawable(R.drawable.search_text_corners_shape)
         }
+
     }
 
     fun setSerchRecycler() {
         searchProductAdapter = ProductAdapter(searchFragmentInteractor = fragmentInteractor)
         searchRecycler.adapter = searchProductAdapter
-        searchRecycler.layoutManager = GridLayoutManager(context, 2,GridLayoutManager.VERTICAL,false);
+        searchRecycler.layoutManager =
+            GridLayoutManager(context, 2, GridLayoutManager.VERTICAL, false);
         searchRecycler.addItemDecoration(SearchItemDecoration())
         searchRecycler.setNestedScrollingEnabled(false);
         viewModel.searchList.observe(viewLifecycleOwner, Observer {
@@ -83,4 +91,10 @@ class SearchFragment : Fragment() {
         searchProductAdapter = null
         super.onDestroy()
     }
+}
+
+enum class statePlace {
+    All,
+    InStore,
+    Warehouse
 }

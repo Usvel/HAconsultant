@@ -1,8 +1,10 @@
 package com.example.haconsultant.fragment.product
 
+import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,13 +13,22 @@ import com.example.haconsultant.R
 import com.example.haconsultant.fragment.home.ProductAdapter
 import com.example.haconsultant.model.HomeData
 import com.example.haconsultant.model.Product
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_product.*
+import kotlinx.android.synthetic.main.fragment_product.view.*
+import java.lang.StringBuilder
+import java.util.ArrayList
+import java.util.concurrent.TimeUnit
 
 class ProductFragment : Fragment() {
     //    val viewModel: ProductViewModel by lazy {
 //        ViewModelProvider(requireActivity()).get(ProductViewModel::class.java)
 //    }
     private var positionScroll = 0
+
+    private val compositeDisposable = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,7 +41,7 @@ class ProductFragment : Fragment() {
         fun newInstance(product: Product): ProductFragment {
             val fragment = ProductFragment()
             val arguments = Bundle()
-            arguments.putParcelable(ARG_MESSAGE_PRODUCT, product)
+            arguments.putSerializable(ARG_MESSAGE_PRODUCT, product)
             fragment.arguments = arguments
             return fragment
         }
@@ -51,7 +62,7 @@ class ProductFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_product, container, false)
-        recievedProduct = requireArguments().getParcelable<Product>(ARG_MESSAGE_PRODUCT)
+        recievedProduct = requireArguments().getSerializable(ARG_MESSAGE_PRODUCT) as Product?
         return view
     }
 
@@ -60,7 +71,6 @@ class ProductFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setPagerAdapter()
         setProductAdapter()
-
 //        viewModel.product.observe(viewLifecycleOwner, Observer {
 //            it.let { product ->
 //                productName.text = product.name
@@ -77,6 +87,36 @@ class ProductFragment : Fragment() {
             productCodeVendor.text = recievedProduct!!.codeVendor
             productRatingBar.rating = recievedProduct!!.evaluation
             productSizeReviews.text = "Отзовы ${recievedProduct!!.sizeReviews}"
+            productDescription.text = recievedProduct!!.description
+            if (productAdapter?.items?.size == 0) {
+                val disposable = fragmentInteractor?.loadListProduct(recievedProduct!!.listProduct)
+                    ?.subscribeOn(Schedulers.io())
+                    ?.observeOn(AndroidSchedulers.mainThread())
+                    ?.subscribe({
+                        addIteamAdapter(it)
+                        if (productAdapter?.items?.size == 1) {
+                            productScrollView.post {
+                                productScrollView.scrollTo(0, positionScroll)
+                            }
+                        }
+                        // productScrollView.scrollY = positionScroll
+                    }, {
+                        AlertDialog.Builder(context).setTitle("Ошибка загрузки")
+                            .setMessage(it.message)
+                            .show()
+                        productScrollView.post {
+                            productScrollView.smoothScrollTo(0, positionScroll)
+                        }
+                    })
+                compositeDisposable.add(disposable!!)
+            }
+            val text = StringBuilder()
+            text.appendLine("Вес: ${recievedProduct?.weight}")
+            recievedProduct?.characteristics?.forEach {
+                text.appendLine("${it.key}: ${it.value}")
+                Log.d("TEXT", text.toString())
+            }
+            productCharacteristics.text = text
         }
 
         if (fragmentInteractor?.statusProductr(product = recievedProduct!!) == true) {
@@ -88,11 +128,11 @@ class ProductFragment : Fragment() {
             recievedProduct?.let { it1 -> fragmentInteractor?.addShopping(it1) }
         }
         productBtnAllDescription.setOnClickListener {
-            fragmentInteractor?.openAllDescription()
+            fragmentInteractor?.openAllDescription(productDescription.text.toString())
         }
 
         productBtnAllСharacteristics.setOnClickListener {
-            fragmentInteractor?.openAllFeature()
+            fragmentInteractor?.openAllFeature(productCharacteristics.text.toString())
         }
 
         productBtnAllSubjects.setOnClickListener {
@@ -101,7 +141,6 @@ class ProductFragment : Fragment() {
         productBtnBack.setOnClickListener {
             fragmentInteractor?.onProductBack()
         }
-
         productScrollView.scrollTo(0, positionScroll)
     }
 
@@ -114,9 +153,14 @@ class ProductFragment : Fragment() {
         productIndicator.setViewPager(productViewPager)
     }
 
+    private fun addIteamAdapter(product: Product) {
+        (productAdapter?.items as MutableList).add(product)
+        productAdapter?.notifyItemInserted(productAdapter?.items!!.size)
+    }
+
     private fun setProductAdapter() {
         productAdapter = ProductAdapter(productFragmentInteractor = fragmentInteractor)
-        productAdapter?.items = HomeData.getProduct()
+        productAdapter?.items = ArrayList()
         productRecycler.adapter = productAdapter
     }
 
@@ -128,6 +172,7 @@ class ProductFragment : Fragment() {
     override fun onDestroy() {
         fragmentInteractor = null
         productAdapter = null
+        compositeDisposable.clear()
         super.onDestroy()
     }
 

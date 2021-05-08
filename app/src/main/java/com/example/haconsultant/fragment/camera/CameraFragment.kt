@@ -2,38 +2,31 @@ package com.example.haconsultant.fragment.camera
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.AlertDialog
 import android.content.Context
 import android.content.pm.PackageManager
-import android.media.Image
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.camera.core.*
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.ImageAnalysis
+import androidx.camera.core.ImageProxy
+import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.example.haconsultant.R
 import com.example.haconsultant.fragment.BackStackLiveData
 import com.example.haconsultant.fragment.StatusCamera
-import com.example.haconsultant.fragment.basket.BasketViewModel
-import com.example.haconsultant.fragment.catalog.CatalogFragmentInteractor
-import com.example.haconsultant.model.Product
+import com.google.mlkit.vision.barcode.Barcode
 import com.google.mlkit.vision.barcode.BarcodeScanner
-import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
 import kotlinx.android.synthetic.main.fragment_camera.*
-import java.io.File
 import java.nio.ByteBuffer
-import java.text.SimpleDateFormat
-import java.util.*
+import java.util.HashMap
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -108,8 +101,14 @@ class CameraFragment : Fragment() {
                 .also {
                     it.setAnalyzer(
                         cameraExecutor,
-                        LuminosityAnalyzer() { okCamera++
-                            if (okCamera == 1) fragmentInteractor?.onCameraOk(it) })
+                        LuminosityAnalyzer() { codeVendor, name, password ->
+                            okCamera++
+                            if (okCamera == 1) fragmentInteractor?.onCameraOk(
+                                codeVendor,
+                                name,
+                                password
+                            )
+                        })
                 }
 
             // Select back camera as a default
@@ -171,7 +170,7 @@ class CameraFragment : Fragment() {
 
 //класс для анализа
 //Удалить контекст Не забыть
-private class LuminosityAnalyzer(private val onResult: (String) -> Unit) :
+private class LuminosityAnalyzer(private val onResult: (codeVendo: String?, name: String?, password: String?) -> Unit) :
     ImageAnalysis.Analyzer {
 
     private fun ByteBuffer.toByteArray(): ByteArray {
@@ -209,9 +208,40 @@ private class LuminosityAnalyzer(private val onResult: (String) -> Unit) :
 
         barcodeScanner.process(inputImage)
             .addOnSuccessListener { barcodes ->
-                barcodes.forEach {
-                    imageProxy.close()
-                    onResult(it.displayValue)
+                if (barcodes != null && barcodes.size > 0) {
+                    barcodes.forEach { barcode ->
+                        val scannedFormat = barcode.getFormat();
+                        when (scannedFormat) {
+                            Barcode.FORMAT_QR_CODE -> {
+                                var name: String? = null
+                                var password: String? = null
+                                var codeVendor: String? = null
+                                val pairs = barcode.rawValue.split("\\|".toRegex()).toTypedArray()
+                                for (pair in pairs) {
+                                    val keyValue = pair.split(":".toRegex()).toTypedArray()
+                                    //Log.d("Tag", "${keyValue[0]} + ${keyValue[1]}")
+                                    when (keyValue[0]) {
+                                        "CodeVendor" -> {
+                                            codeVendor = keyValue[1]
+                                        }
+                                        "Name" -> {
+                                            name = keyValue[1]
+                                        }
+                                        "Password" -> {
+                                            password = keyValue[1]
+                                        }
+                                    }
+                                }
+                                if (codeVendor != null || (name != null && password != null)) {
+                                    imageProxy.close()
+                                    onResult(codeVendor, name, password)
+                                }
+                            }
+                            else -> {
+
+                            }
+                        }
+                    }
                 }
             }
             .addOnFailureListener {

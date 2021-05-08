@@ -7,10 +7,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.example.haconsultant.R
 import com.example.haconsultant.fragment.home.ProductAdapter
 import com.example.haconsultant.fragment.product.ProductFragment
 import com.example.haconsultant.fragment.product.ProductFragmentInteractor
+import com.example.haconsultant.fragment.user.UserViewModel
 import com.example.haconsultant.model.Catalog
 import com.example.haconsultant.model.HomeData
 import com.example.haconsultant.model.Product
@@ -18,7 +21,9 @@ import kotlinx.android.synthetic.main.fragment_catalog.*
 
 class CatalogFragment : Fragment() {
 
-    private var recievedCatalog: Catalog? = null
+    val viewModel: CatalogViewModel by lazy {
+        ViewModelProvider(requireActivity()).get(CatalogViewModel::class.java)
+    }
 
     private var fragmentInteractor: CatalogFragmentInteractor? = null
 
@@ -34,8 +39,7 @@ class CatalogFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_catalog, container, false)
-        recievedCatalog =
-            requireArguments().getParcelable(ARG_MESSAGE_CATALOG)
+
         // Inflate the layout for this fragment
         return view
     }
@@ -55,17 +59,22 @@ class CatalogFragment : Fragment() {
     private var catalogAdapter: CatalogAdapter? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        //Переписать
-        if (recievedCatalog?.name != "Каталог") {
-            catalogBtnBack.isVisible = true
-        }
+        setRecyclerView()
+        viewModel.catalogFirestore.observe(viewLifecycleOwner, Observer {
+            catalogAdapter?.items = it.listName!!
+            if (it.name != "Каталог") {
+                catalogBtnBack.isVisible = true
+            }
+            catalogTitle.text = it.name
+        })
+
         catalogBtnBack.setOnClickListener {
             fragmentInteractor?.onCatalogBack()
         }
-        catalogTitle.text = recievedCatalog?.name
-        catalogAdapter = CatalogAdapter(fragmentInteractor)
-        catalogAdapter!!.items = recievedCatalog?.listCatalog!!
-        catalogRecycler.adapter = catalogAdapter
     }
 
+    private fun setRecyclerView() {
+        catalogAdapter = CatalogAdapter(fragmentInteractor)
+        catalogRecycler.adapter = catalogAdapter
+    }
 }

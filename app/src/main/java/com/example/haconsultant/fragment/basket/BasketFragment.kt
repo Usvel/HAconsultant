@@ -18,7 +18,6 @@ import java.text.DecimalFormat
 class BasketFragment : Fragment(), BasketAdapterInteractor {
 
     private var positionScroll = 0
-
     private var fragmentInteractor: BasketFragmentInteractor? = null
 
     val viewModel: BasketViewModel by lazy {
@@ -75,6 +74,11 @@ class BasketFragment : Fragment(), BasketAdapterInteractor {
                 basketPrice.text = "$it ₽"
             }
         })
+        viewModel.sizeProduct.observe(viewLifecycleOwner, Observer {
+            it.let {
+                basketSizeProduct.text = "В корзине $it товара"
+            }
+        })
         bascketScrollView.scrollTo(0, positionScroll)
     }
 
@@ -88,11 +92,13 @@ class BasketFragment : Fragment(), BasketAdapterInteractor {
                 basketProductAdapter?.items = it
                 var price = 0
                 var weight = 0F
+                var sizeProduct = 0
                 for (i in it) {
                     price += i.product.prices
                     weight += i.product.weight
+                    sizeProduct++
                 }
-                viewModel.setItemsValue(price, weight)
+                viewModel.setItemsValue(price, weight, sizeProduct)
             }
         })
         basketRecycler.adapter = basketProductAdapter

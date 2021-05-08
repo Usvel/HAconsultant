@@ -14,7 +14,7 @@ import kotlinx.android.synthetic.main.item_arrow_text.view.*
 class CatalogAdapter(private val catalogfragmentInteractor: CatalogFragmentInteractor? = null) :
     RecyclerView.Adapter<CatalogViewHolder>() {
 
-    var items: List<Catalog> = listOf()
+    var items: List<String> = listOf()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CatalogViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
@@ -34,11 +34,11 @@ class CatalogAdapter(private val catalogfragmentInteractor: CatalogFragmentInter
 
 class CatalogViewHolder(
     val view: View,
-    private val onClick: (Catalog) -> Unit
+    private val onClick: (String) -> Unit
 ) :
     RecyclerView.ViewHolder(view) {
-    fun onBind(catalog: Catalog) {
-        view.arrowText.text = catalog.name
+    fun onBind(catalog: String) {
+        view.arrowText.text = catalog
         view.setOnClickListener {
             onClick(catalog)
         }
