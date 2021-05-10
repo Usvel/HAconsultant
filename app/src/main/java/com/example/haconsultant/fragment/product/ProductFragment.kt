@@ -111,7 +111,7 @@ class ProductFragment : Fragment() {
                 compositeDisposable.add(disposable!!)
             }
             val text = StringBuilder()
-            text.appendLine("Вес: ${recievedProduct?.weight}")
+            text.appendLine("Вес: ${recievedProduct?.weight} кг")
             recievedProduct?.characteristics?.forEach {
                 text.appendLine("${it.key}: ${it.value}")
                 Log.d("TEXT", text.toString())

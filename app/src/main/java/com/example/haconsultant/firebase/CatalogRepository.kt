@@ -1,6 +1,7 @@
 package com.example.haconsultant.firebase
 
 import com.example.haconsultant.firebase.api.CatalogApi
+import com.example.haconsultant.firebase.api.TypeSort
 import com.example.haconsultant.model.CatalogFirestore
 import com.example.haconsultant.model.Product
 import io.reactivex.Flowable
@@ -27,5 +28,25 @@ class CatalogRepository(
 
     fun startCatalog(): Single<CatalogFirestore> {
         return api.catalogStart()
+    }
+
+    fun nextCatalog(
+        document: String,
+        name: String,
+        nameBD: String,
+        feature: MutableMap<String, Any>
+    ): Single<CatalogFirestore> {
+        return api.catalogNext(document, name, nameBD, feature)
+    }
+
+    fun feature(
+        priceMin: Int?,
+        priceMax: Int?,
+        manufacturer: String?,
+        typeSort: TypeSort?,
+        map: Map<String, Any>?,
+        nameCatalog: String?
+    ): Single<List<Product>> {
+        return api.feature(priceMin, priceMax, manufacturer, typeSort, map, nameCatalog)
     }
 }

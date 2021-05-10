@@ -62,8 +62,11 @@ class CatalogFragment : Fragment() {
         setRecyclerView()
         viewModel.catalogFirestore.observe(viewLifecycleOwner, Observer {
             catalogAdapter?.items = it.listName!!
+            catalogAdapter?.notifyDataSetChanged()
             if (it.name != "Каталог") {
                 catalogBtnBack.isVisible = true
+            } else {
+                catalogBtnBack.isVisible = false
             }
             catalogTitle.text = it.name
         })

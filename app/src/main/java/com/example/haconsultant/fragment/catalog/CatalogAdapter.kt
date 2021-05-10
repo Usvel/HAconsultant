@@ -6,12 +6,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.haconsultant.R
+import com.example.haconsultant.fragment.filter.SearchFilterFragmentInteractor
 import com.example.haconsultant.fragment.home.HomeFragmentInteractor
 import com.example.haconsultant.model.Catalog
 import com.example.haconsultant.model.Product
 import kotlinx.android.synthetic.main.item_arrow_text.view.*
 
-class CatalogAdapter(private val catalogfragmentInteractor: CatalogFragmentInteractor? = null) :
+class CatalogAdapter(
+    private val catalogfragmentInteractor: CatalogFragmentInteractor? = null,
+    private val searchFilterFragmentInteractor: SearchFilterFragmentInteractor? = null
+) :
     RecyclerView.Adapter<CatalogViewHolder>() {
 
     var items: List<String> = listOf()
@@ -19,7 +23,11 @@ class CatalogAdapter(private val catalogfragmentInteractor: CatalogFragmentInter
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CatalogViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         val view = layoutInflater.inflate(R.layout.item_arrow_text, parent, false)
-        return CatalogViewHolder(view, { catalogfragmentInteractor?.onCatalogOpenNext(it) })
+        if (catalogfragmentInteractor != null) {
+            return CatalogViewHolder(view, { catalogfragmentInteractor?.onCatalogOpenNext(it) })
+        } else {
+            return CatalogViewHolder(view, { searchFilterFragmentInteractor?.openSearchFilter(it)})
+        }
     }
 
     override fun onBindViewHolder(holder: CatalogViewHolder, position: Int) {

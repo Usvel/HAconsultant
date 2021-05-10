@@ -8,6 +8,8 @@ import com.google.firebase.firestore.*
 import io.reactivex.Flowable
 import io.reactivex.Single
 import io.reactivex.SingleEmitter
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 
 class CatalogApiImpl(var context: Context) : CatalogApi {
@@ -15,16 +17,31 @@ class CatalogApiImpl(var context: Context) : CatalogApi {
     var db = FirebaseFirestore.getInstance()
 
     override fun product(): Single<List<Product>> {
-        feature(priceMin = 3000)
-
+        //feature(priceMin = 3000)
+        val map = mapOf<String, Any>(Pair("Цвет", "Голубой"))//, Pair("NFC", true))
         //db.collection("catalog").document("phone").collection()
+        val order = mutableMapOf<String, Any>(
+            Pair("Цвет", listOf("Голубой", "Синий", "Красный")),
+            //Pair("NFC", listOf(true, false))
+        )
+//        feature(
+////            order = mapOf(Pair("Цвет", "да")),
+//            nameCatalog = "Телефон",
+//            map = map,
+//            typeSort = TypeSort("evaluation", "desc")
+//        ).subscribe({
+//
+//        }, {
+//
+//        })
 
         db.collection("catalog").get().addOnSuccessListener {
-            catalogNext(
-                (it.documents.get(0).reference).path,
-                it.documents.get(0).getString("name")!!,
-                it.documents.get(0).id
-            )
+//            catalogNext(
+//                (it.documents.get(0).reference).path,
+//                it.documents.get(0).getString("name")!!,
+//                it.documents.get(0).id,
+//
+//            )
         }
         return Single.just(
             listOf()
@@ -33,81 +50,137 @@ class CatalogApiImpl(var context: Context) : CatalogApi {
 
     override fun catalogStart(): Single<CatalogFirestore> {
         val catalog =
-            CatalogFirestore(name = "Каталог", db.collection("catalog").path, null, null, null)
+            CatalogFirestore(
+                name = "Каталог",
+                db.collection("catalog").path,
+                null,
+                null,
+                null,
+            )
         return Single.create { emmiter ->
             db.collection("catalog").get().addOnSuccessListener {
+                val pathList = arrayListOf<String>()
+                val nameList = arrayListOf<String>()
+                val nameBD = arrayListOf<String>()
+                val feature = arrayListOf<Map<String, Any>>()
+
                 it.documents.forEach { document ->
-                    val pathList = arrayListOf<String>()
-                    val nameList = arrayListOf<String>()
-                    val nameBD = arrayListOf<String>()
 
                     pathList.add(document.reference.path)
                     nameList.add(document.getString("name")!!)
+
+                    val data = document.data
+                    data?.remove("name")
+
                     nameBD.add(document.id)
+                    data?.let {
+                        feature.add(it)
+                    }
 
-                    catalog.pashlist = pathList
-                    catalog.listName = nameList
-                    catalog.nameBd = nameBD
-
-                    Log.d("catalog", catalog.toString())
-                    emmiter.onSuccess(catalog)
                 }
+                catalog.pashlist = pathList
+                catalog.listName = nameList
+                catalog.nameBd = nameBD
+                catalog.listFeature = feature
+                Log.d("catalog", catalog.toString())
+                emmiter.onSuccess(catalog)
             }
         }
     }
 
-    private fun catalogNext(
+    override fun catalogNext(
         document: String,
         name: String,
-        nameBD: String
+        nameBD: String,
+        feature: MutableMap<String, Any>
     ): Single<CatalogFirestore> {
-        val catalog = CatalogFirestore(name = name, document, null, null, null)
+        val catalog = CatalogFirestore(name = name, document, null, null, null, feature)
         return Single.create { emmiter ->
             db.document(document).collection(nameBD).get().addOnSuccessListener {
-
+                val pathList = arrayListOf<String>()
+                val nameList = arrayListOf<String>()
+                val nameBD = arrayListOf<String>()
+                val listFeature = arrayListOf<Map<String, Any>>()
                 it.documents.forEach { document ->
-                    val pathList = arrayListOf<String>()
-                    val nameList = arrayListOf<String>()
-                    val nameBD = arrayListOf<String>()
-
+                    val data = document.data
                     pathList.add(document.reference.path)
                     nameList.add(document.getString("name")!!)
                     nameBD.add(document.id)
 
-                    catalog.pashlist = pathList
-                    catalog.listName = nameList
-                    catalog.nameBd = nameBD
+                    data?.remove("name")
+                    data?.let { it -> listFeature.add(it) }
 
-                    emmiter.onSuccess(catalog)
+
 //                catalog(
 //                    catalog.pashlist!!.get(0),
 //                    catalog.listName!!.get(0),
 //                    catalog.nameBd!!.get(0)
 //                )
                 }
+
+                catalog.pashlist = pathList
+                catalog.listName = nameList
+                catalog.nameBd = nameBD
+                catalog.listFeature = listFeature
+                Log.d("catalog", catalog.toString())
+                emmiter.onSuccess(catalog)
             }
         }
     }
 
-    private fun feature(
-        priceMin: Int? = null,
-        priceMax: Int? = null,
-        manufacturer: String? = null,
-        map: Map<String, String>? = null
-    ) {
+    override fun feature(
+        priceMin: Int?,
+        priceMax: Int?,
+        manufacturer: String?,
+        typeSort: TypeSort?,
+        map: Map<String, Any>?,
+        nameCatalog: String?
+    ): Single<List<Product>> {
         var zapros = db.collection("product") as Query
+
         if (priceMin != null) {
+            Log.d("Catalog-123", priceMin.toString())
             zapros = zapros.whereGreaterThanOrEqualTo("prices", priceMin)
         }
         if (priceMax != null) {
+            Log.d("Catalog-123", priceMax.toString())
             zapros = zapros.whereLessThanOrEqualTo("prices", priceMax)
         }
+
+        if (nameCatalog != null) {
+            Log.d("Catalog-123", nameCatalog.toString())
+            zapros = zapros.whereArrayContains("Каталог", nameCatalog)
+        }
+
         if (manufacturer != null) {
+            Log.d("Catalog-123", manufacturer.toString())
             zapros = zapros.whereEqualTo("manufacturer", manufacturer)
         }
 
         map?.forEach {
+            Log.d("Catalog-123", it.key + " " + it.value)
             zapros = zapros.whereEqualTo(it.key, it.value)
+        }
+
+        if (typeSort != null) {
+            Log.d("Catalog-123", typeSort.toString())
+            if (typeSort.value == "desc") {
+                zapros = zapros.orderBy(typeSort.key, Query.Direction.DESCENDING)
+            } else {
+                zapros = zapros.orderBy(typeSort.key, Query.Direction.ASCENDING)
+            }
+        }
+
+        return Single.create { emmiter ->
+            Log.d("Searsh", "вошел")
+            zapros.get().addOnSuccessListener {
+                val listProduct = arrayListOf<Product>()
+                it.documents.forEach {
+                    listProduct.add(convertToProduct(it))
+                }
+                Log.d("Searsh", listProduct.toString())
+                emmiter.onSuccess(listProduct)
+            }
         }
     }
 
@@ -225,3 +298,10 @@ class CatalogApiImpl(var context: Context) : CatalogApi {
         return product
     }
 }
+
+data class TypeSort(
+    val key: String,
+    val value: String
+)
+
+
