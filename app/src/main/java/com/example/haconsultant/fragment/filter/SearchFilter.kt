@@ -6,9 +6,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.haconsultant.R
+import com.example.haconsultant.firebase.api.TypeSort
 import com.example.haconsultant.fragment.catalog.CatalogAdapter
 import com.example.haconsultant.fragment.catalog.CatalogFragmentInteractor
 import com.example.haconsultant.fragment.search.SearhViewModel
@@ -45,9 +47,15 @@ class SearchFilter : Fragment() {
         setRecyclerView()
         viewModel.mapFilter.observe(viewLifecycleOwner, Observer {
             val listString = arrayListOf<String>()
+            if (viewModel.feature.value?.typeSort == TypeSort("evaluation", "desc")) {
+                searchPrice.isVisible = false
+            } else {
+                searchPrice.arrowText.text = "Цена"
+            }
             it.forEach {
                 if (it.key == "manufacturer") {
                     searchManufacturer.arrowText.text = "Производитель"
+                    searchPrice.arrowText.text = "Цена"
                 } else {
                     listString.add(it.key)
                 }
@@ -61,6 +69,9 @@ class SearchFilter : Fragment() {
 
         searchFilterBtnBack.setOnClickListener {
             fragmentInteractor?.onSearchFilterBack()
+        }
+        searchPrice.setOnClickListener {
+            fragmentInteractor?.openPriceFilter()
         }
     }
 

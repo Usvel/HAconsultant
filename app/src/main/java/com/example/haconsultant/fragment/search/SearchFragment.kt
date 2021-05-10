@@ -153,6 +153,8 @@ class SearchFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
                 return true
             }
             R.id.searchUs -> {
+                viewModel.feature.value?.priceMax = null
+                viewModel.feature.value?.priceMin = null
                 viewModel.setSort(TypeSort("evaluation", "desc"))
                 return true
             }

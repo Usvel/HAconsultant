@@ -32,10 +32,7 @@ import com.example.haconsultant.fragment.camera.CameraFragmentInteractor
 import com.example.haconsultant.fragment.catalog.CatalogFragment
 import com.example.haconsultant.fragment.catalog.CatalogFragmentInteractor
 import com.example.haconsultant.fragment.catalog.CatalogViewModel
-import com.example.haconsultant.fragment.filter.IteamFilter
-import com.example.haconsultant.fragment.filter.IteamFilterFragmentInteractor
-import com.example.haconsultant.fragment.filter.SearchFilter
-import com.example.haconsultant.fragment.filter.SearchFilterFragmentInteractor
+import com.example.haconsultant.fragment.filter.*
 import com.example.haconsultant.fragment.home.HomeFragmentInteractor
 import com.example.haconsultant.fragment.home.HomeViewModel
 import com.example.haconsultant.fragment.home.Status
@@ -64,7 +61,8 @@ class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragment
     ProductFragmentInteractor,
     AddirionalFragmentInteractor,
     SearchFilterFragmentInteractor,
-    IteamFilterFragmentInteractor {
+    IteamFilterFragmentInteractor,
+    IteamPriceFragmentInteractor {
 
     private val compositeDisposable = CompositeDisposable()
     private val catalogRepository by lazy { CatalogRepository(CatalogApiImpl(context = this)) }
@@ -549,6 +547,10 @@ class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragment
         addFragment(fragment)
     }
 
+    override fun openPriceFilter() {
+        addFragment(IteamPriceFragment())
+    }
+
     override fun onAddMap(key: String, value: Any) {
         searhViewModel.feature.value?.map?.put(key, value)
         featureCatalog(searhViewModel.feature.value!!)
@@ -560,6 +562,17 @@ class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragment
     }
 
     override fun onIteamFilterBack() {
+        backFragment()
+    }
+
+    override fun onSearchPriceBack() {
+        backFragment()
+    }
+
+    override fun onSearchAddPrice(min: Int?, max: Int?) {
+        searhViewModel.feature.value?.priceMin = min
+        searhViewModel.feature.value?.priceMax = max
+        featureCatalog(searhViewModel.feature.value!!)
         backFragment()
     }
 }
