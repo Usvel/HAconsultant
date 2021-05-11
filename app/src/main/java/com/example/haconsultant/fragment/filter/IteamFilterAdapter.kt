@@ -55,7 +55,17 @@ class IteamFilterViewHolder(
 ) :
     RecyclerView.ViewHolder(view) {
     fun onBind(iteamFilterData: IteamFilterData) {
-        view.iteamFilterText.text = iteamFilterData.value.toString()
+        when (iteamFilterData.value) {
+            true -> {
+                view.iteamFilterText.text = "Есть"
+            }
+            false -> {
+                view.iteamFilterText.text = "Отсутствует"
+            }
+            else -> {
+                view.iteamFilterText.text = iteamFilterData.value.toString()
+            }
+        }
         view.iteamFilterCheck.isChecked = iteamFilterData.check
         view.setOnClickListener {
             onClick(iteamFilterData.value)

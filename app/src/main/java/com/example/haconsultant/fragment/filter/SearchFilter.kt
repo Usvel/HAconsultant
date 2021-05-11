@@ -33,6 +33,10 @@ class SearchFilter : Fragment() {
         }
     }
 
+    companion object {
+        private val listOff = listOf<String>("imageUrl")
+    }
+
     private var catalogAdapter: CatalogAdapter? = null
 
     override fun onCreateView(
@@ -45,19 +49,22 @@ class SearchFilter : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setRecyclerView()
+        searchManufacturer.isVisible = false
+        searchPrice.isVisible = false
         viewModel.mapFilter.observe(viewLifecycleOwner, Observer {
             val listString = arrayListOf<String>()
-            if (viewModel.feature.value?.typeSort == TypeSort("evaluation", "desc")) {
-                searchPrice.isVisible = false
-            } else {
+            if (viewModel.feature.value?.typeSort != TypeSort("evaluation", "desc")) {
                 searchPrice.arrowText.text = "Цена"
+                searchPrice.isVisible = true
             }
             it.forEach {
                 if (it.key == "manufacturer") {
                     searchManufacturer.arrowText.text = "Производитель"
-                    searchPrice.arrowText.text = "Цена"
+                    searchManufacturer.isVisible = true
                 } else {
-                    listString.add(it.key)
+                    if (!(it.key in listOff)) {
+                        listString.add(it.key)
+                    }
                 }
             }
             catalogAdapter?.items = listString

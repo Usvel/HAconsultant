@@ -42,10 +42,7 @@ import com.example.haconsultant.fragment.search.SearchFragment
 import com.example.haconsultant.fragment.search.SearchFragmentInteractor
 import com.example.haconsultant.fragment.search.SearhViewModel
 import com.example.haconsultant.fragment.user.UserFragmentInteractor
-import com.example.haconsultant.model.Catalog
-import com.example.haconsultant.model.Feature
-import com.example.haconsultant.model.HomeCatalog
-import com.example.haconsultant.model.Product
+import com.example.haconsultant.model.*
 import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -111,6 +108,7 @@ class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragment
                 R.id.navigation_catalog -> {
                     if (backStackLiveData.statusFragment.value == StatusFragment.Catalog) {
                         setStarFragment()
+                        catalogViewModel.setStartCatalog()
                     } else {
                         backStackLiveData.setStatus(StatusFragment.Catalog)
                     }
@@ -174,6 +172,17 @@ class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragment
         val disposable = catalogRepository.startCatalog().subscribeOn(Schedulers.io())
             .subscribeOn(AndroidSchedulers.mainThread()).subscribe({
                 catalogViewModel.setCatalog(it)
+                val listHomeCatalog: MutableList<HomeCatalog> = arrayListOf()
+                it.listName?.forEachIndexed { index, s ->
+                    listHomeCatalog.add(
+                        HomeCatalog(
+                            s,
+                            it.listFeature?.get(index)?.get("imageUrl").toString()
+                        )
+                    )
+                }
+                Log.d("catalog", listHomeCatalog.toString())
+                homeModel.setCatalogList(listHomeCatalog)
             }, {
                 AlertDialog.Builder(this)
                     .setTitle("Ошибка загрузки")
@@ -253,7 +262,82 @@ class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragment
     }
 
     override fun onHomeOpenCatalog(homeCatalog: HomeCatalog) {
+        if (homeCatalog.name != "Каталог") {
+            //писать катало
+            val dialog = AlertDialog.Builder(this)
+                .setView(layoutInflater.inflate(R.layout.custom_dialog, null)).setCancelable(false)
+                .show()
+            dialog.window?.setLayout(dpToPx(100), dpToPx(100))
+            dialog.show()
+
+            var catalogFirestore: CatalogFirestore? = null
+            val catalog = homeCatalog.name
+            if (!catalogViewModel._stackCatalogFirestore.value?.isEmpty()!!) {
+                catalogFirestore =
+                    catalogViewModel._stackCatalogFirestore.value?.get(0)
+            } else {
+                catalogFirestore = catalogViewModel.catalogFirestore.value
+            }
+
+            val index = catalogFirestore?.listName?.indexOf(catalog)
+            val path = catalogFirestore?.pashlist?.get(index!!)
+            val id = catalogFirestore?.nameBd?.get(index!!)
+            val featureMap = mutableMapOf<String, Any>()
+            catalogFirestore?.listFeature?.get(index!!)?.forEach {
+                Log.d("catalog", "зашел")
+                featureMap.put(it.key, it.value)
+            }
+
+            val disposable =
+                catalogRepository.nextCatalog(path!!, catalog, id!!, featureMap)
+                    .subscribeOn(Schedulers.io())
+                    .subscribeOn(AndroidSchedulers.mainThread()).subscribe({
+                        dialog.hide()
+                        val feature = Feature(
+                            typeSort = TypeSort("evaluation", "desc"),
+                            nameCatalog = it.name
+                        )
+                        searhViewModel.feature.value = feature
+                        searhViewModel.mapFilter.value = featureMap
+                        featureCatalog(feature)
+                        openHomeCatalog()
+                        //addFragment(SearchFragment())
+                    }, {
+                        dialog.hide()
+                        AlertDialog.Builder(this)
+                            .setTitle("Ошибка загрузки")
+                            .setMessage(it.message)
+                            .setPositiveButton("ок") { dialog, id ->
+                                dialog.cancel()
+                            }.show()
+                    })
+            compositeDisposable.add(disposable)
+        } else {
+            openHomeCatalogStart()
+        }
         Toast.makeText(this, homeCatalog.name, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun openHomeCatalogStart() {
+        bottomNavigation.menu.findItem(R.id.navigation_catalog).isChecked = true
+        backStackLiveData.setStatus(StatusFragment.Catalog)
+        while (!(backStackLiveData.lastQeueFragment() is CatalogFragment)) {
+            backFragment()
+        }
+        catalogViewModel.setStartCatalog()
+    }
+
+    private fun openHomeCatalog() {
+        bottomNavigation.menu.findItem(R.id.navigation_catalog).isChecked = true
+        backStackLiveData.setStatus(StatusFragment.Catalog)
+        if (backStackLiveData.lastQeueFragment() is CatalogFragment) {
+            addFragment(SearchFragment())
+        } else {
+            while (!(backStackLiveData.lastQeueFragment() is CatalogFragment)) {
+                backFragment()
+            }
+            addFragment(SearchFragment())
+        }
     }
 
     override fun onHomeOpenCameraQrCode() {
@@ -356,6 +440,7 @@ class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragment
             Log.d("catalog", "зашел")
             featureMap.put(it.key, it.value)
         }
+
         catalogFirestore?.listFeature?.get(index!!)?.forEach {
             Log.d("catalog", "зашел-2")
             featureMap.put(it.key, it.value)
@@ -492,6 +577,7 @@ class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragment
         }
 
     }
+
 
     override fun onBackPressed() {
 //        AlertDialog.Builder(this).apply {

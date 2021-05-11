@@ -3,6 +3,7 @@ package com.example.haconsultant.fragment.search
 import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.MenuItem
@@ -11,17 +12,22 @@ import android.view.ViewGroup
 import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.core.view.isVisible
+import androidx.core.widget.doOnTextChanged
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.haconsultant.R
 import com.example.haconsultant.firebase.api.TypeSort
 import com.example.haconsultant.fragment.home.ProductAdapter
+import com.example.haconsultant.model.Product
+import kotlinx.android.synthetic.main.fragment_product.*
 import kotlinx.android.synthetic.main.fragment_search.*
 
 class SearchFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
 
     private var fragmentInteractor: SearchFragmentInteractor? = null
+
+    var positionScroll = 0
 
     val viewModel: SearhViewModel by lazy {
         ViewModelProvider(requireActivity()).get(SearhViewModel::class.java)
@@ -45,6 +51,7 @@ class SearchFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
     private var searchProductAdapter: ProductAdapter? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        searchScrollView.scrollTo(0, positionScroll)
         setSerchRecycler()
         searchBtnBack.setOnClickListener {
             fragmentInteractor?.onSearchBack()
@@ -98,8 +105,10 @@ class SearchFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
             fragmentInteractor?.onSearchOpenFilter()
         }
         viewModel.searhSort.observe(viewLifecycleOwner, Observer {
-            viewModel.feature.value?.typeSort = it
-            fragmentInteractor?.featureCatalog(viewModel.feature.value!!)
+            if (viewModel.feature.value?.typeSort != it) {
+                viewModel.feature.value?.typeSort = it
+                fragmentInteractor?.featureCatalog(viewModel.feature.value!!)
+            }
             when (it) {
                 TypeSort("prices", "asc") -> {
                     searchBySortText.text = "Сначала дещёвые"
@@ -112,9 +121,23 @@ class SearchFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
                 }
             }
         })
+        searchTextSearchProduct.doOnTextChanged { text, start, before, count ->
+            searchText(text.toString())
+        }
     }
 
-    fun setSerchRecycler() {
+    private fun searchText(text: String) {
+        val list = arrayListOf<Product>()
+        viewModel.searchList.value?.forEach {
+            if (it.name.toLowerCase().contains(text.toLowerCase())) {
+                list.add(it)
+            }
+        }
+        searchProductAdapter?.items = list
+        searchProductAdapter?.notifyDataSetChanged()
+    }
+
+    private fun setSerchRecycler() {
         searchProductAdapter = ProductAdapter(searchFragmentInteractor = fragmentInteractor)
         searchRecycler.adapter = searchProductAdapter
         searchRecycler.layoutManager =
@@ -125,8 +148,19 @@ class SearchFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
             it.let {
                 searchProductAdapter?.items = it
                 searchProductAdapter?.notifyDataSetChanged()
+                searchTitle.text = viewModel.feature.value?.nameCatalog
+                if (!searchTextSearchProduct.text.isEmpty()) {
+                    searchText(searchTextSearchProduct.text.toString())
+                    searchTitle.text = searchTextSearchProduct.text
+                }
             }
         })
+    }
+
+
+    override fun onStop() {
+        positionScroll = searchScrollView.getScrollY()
+        super.onStop()
     }
 
     override fun onDestroy() {

@@ -46,6 +46,7 @@ class IteamFilter : Fragment() {
             fragment.arguments = arguments
             return fragment
         }
+
     }
 
     private var recievedName: String? = null
@@ -63,8 +64,13 @@ class IteamFilter : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setRecyclerView()
         if (recievedName != null) {
-            iteamFilterTitle.text = recievedName
+            if (recievedName == "manufacturer") {
+                iteamFilterTitle.text = "Производитель"
+            } else {
+                iteamFilterTitle.text = recievedName
+            }
             val listIteam = arrayListOf<IteamFilterData>()
+
             (viewModel.mapFilter.value?.get(recievedName) as List<Any>).forEach {
                 if (viewModel.feature.value?.map?.get(recievedName) == it) {
                     listIteam.add(IteamFilterData(recievedName!!, it, true))

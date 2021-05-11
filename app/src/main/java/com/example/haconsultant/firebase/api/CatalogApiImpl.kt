@@ -3,6 +3,7 @@ package com.example.haconsultant.firebase.api
 import android.content.Context
 import android.util.Log
 import com.example.haconsultant.model.CatalogFirestore
+import com.example.haconsultant.model.HomeCatalog
 import com.example.haconsultant.model.Product
 import com.google.firebase.firestore.*
 import io.reactivex.Flowable

@@ -6,9 +6,10 @@ import com.example.haconsultant.model.CatalogFirestore
 import java.util.ArrayList
 
 class CatalogViewModel : ViewModel() {
-    private val _stackCatalogFirestore: MutableLiveData<MutableList<CatalogFirestore>> =
+    val _stackCatalogFirestore: MutableLiveData<MutableList<CatalogFirestore>> =
         MutableLiveData()
     private val _catalogFirestore: MutableLiveData<CatalogFirestore> = MutableLiveData()
+
 
     val catalogFirestore = _catalogFirestore
 
@@ -24,6 +25,12 @@ class CatalogViewModel : ViewModel() {
     fun backCatalog() {
         _catalogFirestore.value = _stackCatalogFirestore.value?.last()
         _stackCatalogFirestore.value?.removeLast()
+    }
+
+    fun setStartCatalog() {
+        while (_stackCatalogFirestore.value?.size != 0) {
+            backCatalog()
+        }
     }
 
 }

@@ -11,6 +11,7 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.haconsultant.R
+import com.example.haconsultant.model.HomeCatalog
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.fragment_product.*
 
@@ -113,7 +114,11 @@ class HomeFragment : Fragment() {
         homeCatalogAdapter = HomeCatalogAdapter(fragmentInteractor)
         viewModel.catalogList.observe(viewLifecycleOwner, Observer {
             it.let {
-                homeCatalogAdapter?.list = it
+                val listCatalog: MutableList<HomeCatalog> = arrayListOf()
+                listCatalog.add(0,HomeCatalog(name = "Каталог", imageUrl = null))
+                it.forEach { listCatalog.add(it) }
+                homeCatalogAdapter?.list = listCatalog
+                homeCatalogAdapter?.notifyDataSetChanged()
             }
         })
         homeRecyclerСatalog.adapter = homeCatalogAdapter

@@ -34,6 +34,10 @@ class HomeViewModel : ViewModel() {
     fun setStatusNew(status: Status){
         _statusNewList.value = status
     }
+
+    fun setCatalogList(list: List<HomeCatalog>){
+        _catalogList.value = list
+    }
 }
 
 
