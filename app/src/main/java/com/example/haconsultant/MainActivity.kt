@@ -31,6 +31,8 @@ import com.example.haconsultant.fragment.catalog.CatalogFragment
 import com.example.haconsultant.fragment.catalog.CatalogFragmentInteractor
 import com.example.haconsultant.fragment.catalog.CatalogViewModel
 import com.example.haconsultant.fragment.filter.*
+import com.example.haconsultant.fragment.history.HistoryFragment
+import com.example.haconsultant.fragment.history.HistoryFragmentInteractor
 import com.example.haconsultant.fragment.home.HomeFragmentInteractor
 import com.example.haconsultant.fragment.home.HomeViewModel
 import com.example.haconsultant.fragment.home.Status
@@ -46,7 +48,9 @@ import com.example.haconsultant.fragment.user.UserFragmentInteractor
 import com.example.haconsultant.fragment.user.UserViewModel
 import com.example.haconsultant.model.*
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import io.reactivex.Flowable
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -62,7 +66,7 @@ class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragment
     SearchFilterFragmentInteractor,
     IteamFilterFragmentInteractor,
     IteamPriceFragmentInteractor,
-    SetingsFragmentInteractor {
+    SetingsFragmentInteractor, HistoryFragmentInteractor {
 
     private val compositeDisposable = CompositeDisposable()
     private val catalogRepository by lazy { CatalogRepository(CatalogApiImpl(context = this)) }
@@ -392,6 +396,10 @@ class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragment
         addFragment(SetingsFragment())
     }
 
+    override fun openHistory() {
+        addFragment(HistoryFragment())
+    }
+
     override fun onBasketOpenItem(product: Product) {
         val productFragment = ProductFragment.newInstance(product)
         addFragment(productFragment)
@@ -400,6 +408,17 @@ class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragment
     override fun onBasketCheckout() {
         val list = basketViewModel.basketList.value
         val gson = Gson().toJson(list)
+
+        val postType = object : TypeToken<List<BasketItem>>() {}.type
+        val listBasket: List<BasketItem> = Gson().fromJson(gson, postType)
+
+        val listProduct = arrayListOf<Product>()
+        listBasket.forEach {
+            listProduct.add(it.product)
+        }
+
+        Log.d("proverca", listBasket.size.toString())
+
         val currentDate = Date()
         if (userViewModel.id.value != "00000000") {
             val disposable = catalogRepository.setOrder(
@@ -408,6 +427,7 @@ class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragment
                 gson
             ).subscribeOn(Schedulers.io())
                 .subscribeOn(AndroidSchedulers.mainThread()).subscribe({
+                    basketViewModel.basketToZero()
                     addFragment(PurchaseFragment.newInstance(it))
                 }, {
                     AlertDialog.Builder(this).setTitle("Ошибка сети").setMessage(it.message).show()
@@ -745,5 +765,14 @@ class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragment
                 backFragment()
             })
         compositeDisposable.add(disposable)
+    }
+
+    override fun loadHistoryFragment(): Single<List<Orders>> {
+        return catalogRepository.loadHistory(userViewModel.id.value!!)
+    }
+
+    override fun openOrder(orders: Orders) {
+        val fragment = PurchaseFragment.newInstance(orders)
+        addFragment(fragment)
     }
 }

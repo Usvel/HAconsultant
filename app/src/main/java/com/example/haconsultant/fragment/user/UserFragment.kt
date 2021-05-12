@@ -57,11 +57,18 @@ class UserFragment : Fragment() {
                 AlertDialog.Builder(context).setTitle("Профиль").setMessage("Вы не вошли").show()
             }
         }
+        userHistori.setOnClickListener {
+            if (viewModel.id.value != "00000000") {
+                fragmentInteractor?.openHistory()
+            } else {
+                AlertDialog.Builder(context).setTitle("Профиль").setMessage("Вы не вошли").show()
+            }
+        }
     }
 
     private fun setText() {
         userSetings.arrowText.text = "Настройки"
-        userBonuses.arrowText.text = "Бонусы"
+        userHistori.arrowText.text = "История заказов"
         userCoupons.arrowText.text = "Купоны"
     }
 

@@ -19,7 +19,7 @@ class BasketViewModel : ViewModel() {
     val price: LiveData<Int> = _price
     val weight: LiveData<Float> = _weight
     val status: LiveData<BasketStatus> = _status
-    val sizeProduct : LiveData<Int> = _sizeProduct
+    val sizeProduct: LiveData<Int> = _sizeProduct
 
     init {
         _basketList.value = mutableListOf()
@@ -37,6 +37,12 @@ class BasketViewModel : ViewModel() {
         _price.value = 0
         _weight.value = 0F
         _sizeProduct.value = 0
+    }
+
+    fun basketToZero() {
+        setStatus(BasketStatus.Clear)
+        itmeZero()
+        _basketList.value = mutableListOf()
     }
 
     fun minusItem(item: Product) {

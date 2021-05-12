@@ -2,6 +2,7 @@ package com.example.haconsultant.fragment.purchase
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -12,10 +13,12 @@ import com.example.haconsultant.fragment.home.ProductAdapter
 import com.example.haconsultant.fragment.product.ProductFragment
 import com.example.haconsultant.fragment.search.SearchFragmentInteractor
 import com.example.haconsultant.fragment.search.SearchItemDecoration
+import com.example.haconsultant.model.BasketItem
 import com.example.haconsultant.model.HomeData
 import com.example.haconsultant.model.Orders
 import com.example.haconsultant.model.Product
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.fragment_all_product.*
 import kotlinx.android.synthetic.main.fragment_all_product.allProductRecycler
 import kotlinx.android.synthetic.main.fragment_purchase.*
@@ -52,7 +55,7 @@ class PurchaseFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_purchase, container, false)
-        recievedOrders = savedInstanceState?.getSerializable(ARG_MESSAGE_PURCHASE) as Orders?
+        recievedOrders = requireArguments().getSerializable(ARG_MESSAGE_PURCHASE) as Orders?
         return view
     }
 
@@ -60,6 +63,7 @@ class PurchaseFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setSerchRecycler()
+        Log.d("purchase", "Сдесь")
         if (recievedOrders != null) {
             when (recievedOrders!!.status) {
                 0 -> {
@@ -74,8 +78,21 @@ class PurchaseFragment : Fragment() {
                 3 -> {
                     purchaseStatus.text = "Отклонен"
                 }
+                else -> {
+
+                }
             }
 
+            val postType = object : TypeToken<List<BasketItem>>() {}.type
+            val listBasket: List<BasketItem> = Gson().fromJson(recievedOrders!!.data, postType)
+
+            val listProduct = arrayListOf<Product>()
+            listBasket.forEach {
+                listProduct.add(it.product)
+            }
+            Log.d("proverca", listProduct.size.toString())
+            searchProductAdapter?.items = listProduct
+            searchProductAdapter?.notifyDataSetChanged()
         }
         purchaseBtnBack.setOnClickListener {
             fragmentInteractor?.onSearchBack()
@@ -89,8 +106,6 @@ class PurchaseFragment : Fragment() {
             GridLayoutManager(context, 2, GridLayoutManager.VERTICAL, false);
         purchaseRecycler.addItemDecoration(SearchItemDecoration())
         purchaseRecycler.setNestedScrollingEnabled(false)
-
-        searchProductAdapter?.items = HomeData.getProduct()
     }
 
 }

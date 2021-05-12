@@ -35,4 +35,5 @@ interface CatalogApi {
     fun getUser(id: String): Single<User>
     fun setNameUser(user: User): Single<String>
     fun setOrder(idUser: String, id: String, data: String): Single<Orders>
+    fun loadHistory(id: String): Single<List<Orders>>
 }

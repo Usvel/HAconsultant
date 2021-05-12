@@ -67,4 +67,8 @@ class CatalogRepository(
     fun setOrder(idUser: String, id: String, data: String): Single<Orders> {
         return api.setOrder(idUser, id, data)
     }
+
+    fun loadHistory(id: String): Single<List<Orders>> {
+        return api.loadHistory(id)
+    }
 }

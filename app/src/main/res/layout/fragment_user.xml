@@ -76,10 +76,11 @@
         layout="@layout/item_arrow_text" />
 
     <include
-        android:id="@+id/userBonuses"
+        android:id="@+id/userHistori"
         layout="@layout/item_arrow_text" />
 
     <include
+        android:visibility="gone"
         android:id="@+id/userCoupons"
         layout="@layout/item_arrow_text" />
 </LinearLayout>

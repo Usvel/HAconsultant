@@ -19,6 +19,11 @@ class CatalogApiImpl(var context: Context) : CatalogApi {
         // setNameUser(User("Vlad","Z1R9ncN834NZItKbBDNd")).subscribe()
         //getUser("Z1R9ncN834NZItKbBDNd").subscribe({}, {})
         //feature(priceMin = 3000)
+//        loadHistory("Z1R9ncN834NZItKbBDNd").subscribe({
+//            Log.d("History", it.toString())
+//        }, {
+//
+//        })
         val map = mapOf<String, Any>(Pair("Цвет", "Голубой"))//, Pair("NFC", true))
         //db.collection("catalog").document("phone").collection()
         val order = mutableMapOf<String, Any>(
@@ -48,6 +53,22 @@ class CatalogApiImpl(var context: Context) : CatalogApi {
         return Single.just(
             listOf()
         )
+    }
+
+    override fun loadHistory(id: String): Single<List<Orders>> {
+        return Single.create { emmiter ->
+            db.collection("users").document(id).collection("orders").get().addOnSuccessListener {
+                val list = arrayListOf<Orders>()
+                it.documents.forEach { doc ->
+                    val orders =
+                        Orders(doc.id, doc.getLong("status")!!.toInt(), doc.getString("data")!!)
+                    list.add(orders)
+                }
+                emmiter.onSuccess(list)
+            }.addOnFailureListener {
+                emmiter.onError(it)
+            }
+        }
     }
 
     override fun setOrder(idUser: String, id: String, data: String): Single<Orders> {
