@@ -105,6 +105,11 @@ class HomeFragment : Fragment() {
         viewModel.lastList.observe(viewLifecycleOwner, Observer {
             it.let {
                 lastProductAdapter?.items = it
+                lastProductAdapter?.notifyDataSetChanged()
+                if (it.size != 0) {
+                    homeRecyclerWatched.isVisible = true
+                    homeLastText.isVisible = true
+                }
             }
         })
         homeRecyclerWatched.adapter = lastProductAdapter
@@ -115,7 +120,7 @@ class HomeFragment : Fragment() {
         viewModel.catalogList.observe(viewLifecycleOwner, Observer {
             it.let {
                 val listCatalog: MutableList<HomeCatalog> = arrayListOf()
-                listCatalog.add(0,HomeCatalog(name = "Каталог", imageUrl = null))
+                listCatalog.add(0, HomeCatalog(name = "Каталог", imageUrl = null))
                 it.forEach { listCatalog.add(it) }
                 homeCatalogAdapter?.list = listCatalog
                 homeCatalogAdapter?.notifyDataSetChanged()

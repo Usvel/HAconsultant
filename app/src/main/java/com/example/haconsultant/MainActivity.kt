@@ -288,6 +288,7 @@ class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragment
     override fun onHomeOpenItem(product: Product) {
         val productFragment = ProductFragment.newInstance(product)
         addFragment(productFragment)
+        homeModel.addLastProduct(product)
     }
 
     override fun onHomeOpenCatalog(homeCatalog: HomeCatalog) {
@@ -381,6 +382,7 @@ class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragment
     override fun onSearchOpenItem(product: Product) {
         val productFragment = ProductFragment.newInstance(product)
         addFragment(productFragment)
+        homeModel.addLastProduct(product)
     }
 
     override fun onSearchBack() {
@@ -403,6 +405,7 @@ class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragment
     override fun onBasketOpenItem(product: Product) {
         val productFragment = ProductFragment.newInstance(product)
         addFragment(productFragment)
+        homeModel.addLastProduct(product)
     }
 
     override fun onBasketCheckout() {
@@ -473,6 +476,7 @@ class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragment
     override fun onProductOpenItem(product: Product) {
         val productFragment = ProductFragment.newInstance(product)
         addFragment(productFragment)
+        homeModel.addLastProduct(product)
     }
 
     override fun statusProductr(product: Product): Boolean {
@@ -609,6 +613,7 @@ class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragment
                             .subscribe({ product ->
                                 val productFragment = ProductFragment.newInstance(product)
                                 addFragment(productFragment)
+                                homeModel.addLastProduct(product)
                                 dialog.dismiss()
                             }, {
                                 dialog.dismiss()

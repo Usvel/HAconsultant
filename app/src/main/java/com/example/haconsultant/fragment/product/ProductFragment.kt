@@ -11,7 +11,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.example.haconsultant.R
 import com.example.haconsultant.fragment.home.ProductAdapter
-import com.example.haconsultant.model.HomeData
 import com.example.haconsultant.model.Product
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
