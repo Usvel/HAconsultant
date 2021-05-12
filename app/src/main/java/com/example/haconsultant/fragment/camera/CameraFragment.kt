@@ -101,12 +101,11 @@ class CameraFragment : Fragment() {
                 .also {
                     it.setAnalyzer(
                         cameraExecutor,
-                        LuminosityAnalyzer() { codeVendor, name, password ->
+                        LuminosityAnalyzer() { codeVendor, name ->
                             okCamera++
                             if (okCamera == 1) fragmentInteractor?.onCameraOk(
                                 codeVendor,
-                                name,
-                                password
+                                name
                             )
                         })
                 }
@@ -170,7 +169,7 @@ class CameraFragment : Fragment() {
 
 //класс для анализа
 //Удалить контекст Не забыть
-private class LuminosityAnalyzer(private val onResult: (codeVendo: String?, name: String?, password: String?) -> Unit) :
+private class LuminosityAnalyzer(private val onResult: (codeVendo: String?, name: String?) -> Unit) :
     ImageAnalysis.Analyzer {
 
     private fun ByteBuffer.toByteArray(): ByteArray {
@@ -214,7 +213,6 @@ private class LuminosityAnalyzer(private val onResult: (codeVendo: String?, name
                         when (scannedFormat) {
                             Barcode.FORMAT_QR_CODE -> {
                                 var name: String? = null
-                                var password: String? = null
                                 var codeVendor: String? = null
                                 val pairs = barcode.rawValue.split("\\|".toRegex()).toTypedArray()
                                 for (pair in pairs) {
@@ -224,17 +222,14 @@ private class LuminosityAnalyzer(private val onResult: (codeVendo: String?, name
                                         "CodeVendor" -> {
                                             codeVendor = keyValue[1]
                                         }
-                                        "Name" -> {
+                                        "Id" -> {
                                             name = keyValue[1]
-                                        }
-                                        "Password" -> {
-                                            password = keyValue[1]
                                         }
                                     }
                                 }
-                                if (codeVendor != null || (name != null && password != null)) {
+                                if (codeVendor != null || (name != null)) {
                                     imageProxy.close()
-                                    onResult(codeVendor, name, password)
+                                    onResult(codeVendor, name)
                                 }
                             }
                             else -> {

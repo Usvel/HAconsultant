@@ -8,4 +8,5 @@ interface SearchFragmentInteractor {
     fun onSearchBack()
     fun featureCatalog(feature: Feature)
     fun onSearchOpenFilter()
+    fun loadAllProduct()
 }

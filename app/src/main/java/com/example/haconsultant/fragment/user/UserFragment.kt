@@ -1,5 +1,6 @@
 package com.example.haconsultant.fragment.user
 
+import android.app.AlertDialog
 import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -24,7 +25,7 @@ class UserFragment : Fragment() {
     }
 
     val viewModel: UserViewModel by lazy {
-            ViewModelProvider(requireActivity()).get(UserViewModel::class.java)
+        ViewModelProvider(requireActivity()).get(UserViewModel::class.java)
     }
 
     override fun onCreateView(
@@ -38,23 +39,30 @@ class UserFragment : Fragment() {
         setText()
         viewModel.name.observe(viewLifecycleOwner, Observer {
             it.let {
-               userName.text = it
+                userName.text = it
             }
         })
         viewModel.id.observe(viewLifecycleOwner, Observer {
-            it.let{
+            it.let {
                 userId.text = it
             }
         })
         userIconQrCode.setOnClickListener {
             fragmentInteractor?.onUserOpenCameraQrCode()
         }
+        userSetings.setOnClickListener {
+            if (viewModel.id.value != "00000000") {
+                fragmentInteractor?.openSetings()
+            } else {
+                AlertDialog.Builder(context).setTitle("Профиль").setMessage("Вы не вошли").show()
+            }
+        }
     }
 
-    private fun setText(){
-        userOrders.arrowText.text = "Заказы"
+    private fun setText() {
+        userSetings.arrowText.text = "Настройки"
         userBonuses.arrowText.text = "Бонусы"
-        userCoupons.arrowText.text =  "Купоны"
+        userCoupons.arrowText.text = "Купоны"
     }
 
     override fun onDestroy() {

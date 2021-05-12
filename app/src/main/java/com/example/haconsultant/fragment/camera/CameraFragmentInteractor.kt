@@ -4,5 +4,5 @@ interface CameraFragmentInteractor {
     fun onCameraBack()
 
     //Поменять
-    fun onCameraOk(codeVendor: String? = null, name: String? = null, password: String? = null)
+    fun onCameraOk(codeVendor: String? = null, name: String? = null)
 }

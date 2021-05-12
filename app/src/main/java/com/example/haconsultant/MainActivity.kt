@@ -1,13 +1,9 @@
 package com.example.haconsultant
 
-import android.opengl.Visibility
 import android.os.Bundle
 import android.util.Log
 import android.util.TypedValue
-import android.view.ViewGroup
-import android.view.WindowManager
 import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.annotation.Dimension
 import androidx.annotation.Px
 import androidx.appcompat.app.AlertDialog
@@ -24,6 +20,8 @@ import com.example.haconsultant.fragment.StatusCamera
 import com.example.haconsultant.fragment.StatusFragment
 import com.example.haconsultant.fragment.additional.AddirionalFragmentInteractor
 import com.example.haconsultant.fragment.additional.AdditionalFragment
+import com.example.haconsultant.fragment.all.AllProductFragment
+import com.example.haconsultant.fragment.all.AllProductViewModel
 import com.example.haconsultant.fragment.basket.BasketFragmentInteractor
 import com.example.haconsultant.fragment.basket.BasketStatus
 import com.example.haconsultant.fragment.basket.BasketViewModel
@@ -38,18 +36,22 @@ import com.example.haconsultant.fragment.home.HomeViewModel
 import com.example.haconsultant.fragment.home.Status
 import com.example.haconsultant.fragment.product.ProductFragment
 import com.example.haconsultant.fragment.product.ProductFragmentInteractor
+import com.example.haconsultant.fragment.purchase.PurchaseFragment
 import com.example.haconsultant.fragment.search.SearchFragment
 import com.example.haconsultant.fragment.search.SearchFragmentInteractor
 import com.example.haconsultant.fragment.search.SearhViewModel
+import com.example.haconsultant.fragment.user.SetingsFragment
+import com.example.haconsultant.fragment.user.SetingsFragmentInteractor
 import com.example.haconsultant.fragment.user.UserFragmentInteractor
+import com.example.haconsultant.fragment.user.UserViewModel
 import com.example.haconsultant.model.*
+import com.google.gson.Gson
 import io.reactivex.Flowable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
-import java.util.concurrent.TimeUnit
 
 
 class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragmentInteractor,
@@ -59,7 +61,8 @@ class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragment
     AddirionalFragmentInteractor,
     SearchFilterFragmentInteractor,
     IteamFilterFragmentInteractor,
-    IteamPriceFragmentInteractor {
+    IteamPriceFragmentInteractor,
+    SetingsFragmentInteractor {
 
     private val compositeDisposable = CompositeDisposable()
     private val catalogRepository by lazy { CatalogRepository(CatalogApiImpl(context = this)) }
@@ -70,6 +73,13 @@ class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragment
 //    private val basketFragment = BasketFragment()
 //    private var productFragment = ProductFragment()
 
+    val userViewModel: UserViewModel by lazy {
+        ViewModelProvider(this).get(UserViewModel::class.java)
+    }
+
+    val allProductViewModel: AllProductViewModel by lazy {
+        ViewModelProvider(this).get(AllProductViewModel::class.java)
+    }
 
     val basketViewModel: BasketViewModel by lazy {
         ViewModelProvider(this).get(BasketViewModel::class.java)
@@ -193,6 +203,21 @@ class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragment
                     .show()
             })
         compositeDisposable.add(disposable)
+    }
+
+    override fun loadAllProduct() {
+        val disposable = catalogRepository.loadAllProduct().subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread()).subscribe({
+                allProductViewModel.setList(it)
+            }, {
+                AlertDialog.Builder(this)
+                    .setTitle("Ошибка загрузки")
+                    .setMessage(it.message)
+                    .setPositiveButton("ок") { dialog, id ->
+                        dialog.cancel()
+                    }.create()
+                    .show()
+            })
     }
 
     private fun loadHomeNew() {
@@ -346,7 +371,7 @@ class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragment
     }
 
     override fun onHomeOpenSerch() {
-        addFragment(SearchFragment())
+        addFragment(AllProductFragment())
     }
 
     override fun onSearchOpenItem(product: Product) {
@@ -359,7 +384,12 @@ class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragment
     }
 
     override fun onUserOpenCameraQrCode() {
+        addFragment(CameraFragment())
         Toast.makeText(this, "QrCode", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun openSetings() {
+        addFragment(SetingsFragment())
     }
 
     override fun onBasketOpenItem(product: Product) {
@@ -368,6 +398,25 @@ class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragment
     }
 
     override fun onBasketCheckout() {
+        val list = basketViewModel.basketList.value
+        val gson = Gson().toJson(list)
+        val currentDate = Date()
+        if (userViewModel.id.value != "00000000") {
+            val disposable = catalogRepository.setOrder(
+                userViewModel.id.value.toString(),
+                currentDate.toString(),
+                gson
+            ).subscribeOn(Schedulers.io())
+                .subscribeOn(AndroidSchedulers.mainThread()).subscribe({
+                    addFragment(PurchaseFragment.newInstance(it))
+                }, {
+                    AlertDialog.Builder(this).setTitle("Ошибка сети").setMessage(it.message).show()
+                })
+            compositeDisposable.add(disposable)
+        } else {
+            AlertDialog.Builder(this).setTitle("Профиль").setMessage("Отсканируйте карту").show()
+        }
+        Log.d("basket", gson.toString() + "\n" + currentDate)
         Toast.makeText(this, "Checkout", Toast.LENGTH_SHORT).show()
     }
 
@@ -417,7 +466,7 @@ class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragment
     private fun flagItemInBasket(product: Product): Boolean {
         var flagBasket = false
         basketViewModel.basketList.value?.forEach {
-            if (product.codeVendor === it.product.codeVendor) {
+            if (product.codeVendor.equals(it.product.codeVendor)) {
                 flagBasket = true
                 return flagBasket
             }
@@ -522,7 +571,7 @@ class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragment
         backFragment()
     }
 
-    override fun onCameraOk(codeVendor: String?, name: String?, password: String?) {
+    override fun onCameraOk(codeVendor: String?, name: String?) {
         when (backStackLiveData.statusFragment.value) {
             StatusFragment.Search -> {
                 backStackLiveData.removeQueueFragment()
@@ -563,8 +612,22 @@ class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragment
                 }
             }
             StatusFragment.User -> {
-                if (name != null && password != null) {
-
+                backFragment()
+                val dialog = AlertDialog.Builder(this)
+                    .setView(layoutInflater.inflate(R.layout.custom_dialog, null))
+                    .setCancelable(false).show()
+                dialog.window?.setLayout(dpToPx(100), dpToPx(100))
+                dialog.show()
+                if (name != null) {
+                    catalogRepository.getUser(name).subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe({
+                            userViewModel.setUser(it.name, it.id)
+                            dialog.hide()
+                        }, {
+                            AlertDialog.Builder(this).setTitle("Ошибка")
+                                .setMessage(it.message).show()
+                        })
                 } else {
                     AlertDialog.Builder(this).setTitle("Qr-Code").setMessage("Qr-code от продукта")
                         .show()
@@ -598,12 +661,20 @@ class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragment
 //            setCancelable(true)
 //        }.create().show()
 //
-        backStackLiveData.removeQueueFragment()
-        if (backStackLiveData.lastQeueFragment() == null) {
-            finish()
+        if ((backStackLiveData.statusFragment.value == StatusFragment.Catalog) && (backStackLiveData.lastQeueFragment() is CatalogFragment)) {
+            if (catalogViewModel._stackCatalogFirestore.value?.size != 0) {
+                catalogViewModel.backCatalog()
+            } else {
+                finish()
+            }
         } else {
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.navHostContainer, backStackLiveData.lastQeueFragment()!!).commit()
+            backStackLiveData.removeQueueFragment()
+            if (backStackLiveData.lastQeueFragment() == null) {
+                finish()
+            } else {
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.navHostContainer, backStackLiveData.lastQeueFragment()!!).commit()
+            }
         }
     }
 
@@ -660,5 +731,19 @@ class MainActivity : AppCompatActivity(), HomeFragmentInteractor, SearchFragment
         searhViewModel.feature.value?.priceMax = max
         featureCatalog(searhViewModel.feature.value!!)
         backFragment()
+    }
+
+    override fun onSettingsAddName(string: String) {
+        val disposable = catalogRepository.setNameUser(User(string, userViewModel.id.value!!))
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                userViewModel.setUser(it, userViewModel.id.value!!)
+                backFragment()
+            }, {
+                AlertDialog.Builder(this).setTitle("Пользователь").setMessage("Оштбка сети").show()
+                backFragment()
+            })
+        compositeDisposable.add(disposable)
     }
 }

@@ -23,7 +23,7 @@ class HomeViewModel : ViewModel() {
     init {
         _newList.value = listOf()
         __lastList.value = HomeData.getProduct()
-        _catalogList.value = HomeData.getHomeCatalog()
+        _catalogList.value = listOf()
         _statusNewList.value = Status.Loading
     }
 

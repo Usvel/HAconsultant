@@ -123,7 +123,7 @@ class BackStackLiveData : ViewModel() {
 
     fun startQueueFragment() {
         _queueFragmenHome.value?.push(HomeFragment())
-        _queueFragmenCatalog.value?.push(CatalogFragment.newInstance(HomeData.getCatalog()))
+        _queueFragmenCatalog.value?.push(CatalogFragment())
         _queueFragmenBasket.value?.push(BasketFragment())
         _queueFragmenUser.value?.push(UserFragment())
     }

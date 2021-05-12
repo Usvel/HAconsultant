@@ -21,6 +21,7 @@ import kotlinx.android.synthetic.main.fragment_catalog.*
 
 class CatalogFragment : Fragment() {
 
+
     val viewModel: CatalogViewModel by lazy {
         ViewModelProvider(requireActivity()).get(CatalogViewModel::class.java)
     }
@@ -42,18 +43,6 @@ class CatalogFragment : Fragment() {
 
         // Inflate the layout for this fragment
         return view
-    }
-
-    companion object {
-        private const val ARG_MESSAGE_CATALOG = "catalog"
-
-        fun newInstance(catalog: Catalog): CatalogFragment {
-            val fragment = CatalogFragment()
-            val arguments = Bundle()
-            arguments.putParcelable(ARG_MESSAGE_CATALOG, catalog)
-            fragment.arguments = arguments
-            return fragment
-        }
     }
 
     private var catalogAdapter: CatalogAdapter? = null

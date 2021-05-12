@@ -3,7 +3,9 @@ package com.example.haconsultant.firebase
 import com.example.haconsultant.firebase.api.CatalogApi
 import com.example.haconsultant.firebase.api.TypeSort
 import com.example.haconsultant.model.CatalogFirestore
+import com.example.haconsultant.model.Orders
 import com.example.haconsultant.model.Product
+import com.example.haconsultant.model.User
 import io.reactivex.Flowable
 import io.reactivex.Single
 
@@ -12,6 +14,10 @@ class CatalogRepository(
 ) {
     fun loadProductr(): Single<List<Product>> {
         return api.product()
+    }
+
+    fun loadAllProduct(): Single<List<Product>> {
+        return api.allProduct()
     }
 
     fun loadHomeNewsIteam(): Flowable<Product> {
@@ -48,5 +54,17 @@ class CatalogRepository(
         nameCatalog: String?
     ): Single<List<Product>> {
         return api.feature(priceMin, priceMax, manufacturer, typeSort, map, nameCatalog)
+    }
+
+    fun getUser(id: String): Single<User> {
+        return api.getUser(id)
+    }
+
+    fun setNameUser(user: User): Single<String> {
+        return api.setNameUser(user)
+    }
+
+    fun setOrder(idUser: String, id: String, data: String): Single<Orders> {
+        return api.setOrder(idUser, id, data)
     }
 }

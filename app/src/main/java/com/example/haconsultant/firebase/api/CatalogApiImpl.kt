@@ -2,9 +2,7 @@ package com.example.haconsultant.firebase.api
 
 import android.content.Context
 import android.util.Log
-import com.example.haconsultant.model.CatalogFirestore
-import com.example.haconsultant.model.HomeCatalog
-import com.example.haconsultant.model.Product
+import com.example.haconsultant.model.*
 import com.google.firebase.firestore.*
 import io.reactivex.Flowable
 import io.reactivex.Single
@@ -18,6 +16,8 @@ class CatalogApiImpl(var context: Context) : CatalogApi {
     var db = FirebaseFirestore.getInstance()
 
     override fun product(): Single<List<Product>> {
+        // setNameUser(User("Vlad","Z1R9ncN834NZItKbBDNd")).subscribe()
+        //getUser("Z1R9ncN834NZItKbBDNd").subscribe({}, {})
         //feature(priceMin = 3000)
         val map = mapOf<String, Any>(Pair("Цвет", "Голубой"))//, Pair("NFC", true))
         //db.collection("catalog").document("phone").collection()
@@ -25,6 +25,7 @@ class CatalogApiImpl(var context: Context) : CatalogApi {
             Pair("Цвет", listOf("Голубой", "Синий", "Красный")),
             //Pair("NFC", listOf(true, false))
         )
+        //setOrder("Z1R9ncN834NZItKbBDNd")
 //        feature(
 ////            order = mapOf(Pair("Цвет", "да")),
 //            nameCatalog = "Телефон",
@@ -47,6 +48,47 @@ class CatalogApiImpl(var context: Context) : CatalogApi {
         return Single.just(
             listOf()
         )
+    }
+
+    override fun setOrder(idUser: String, id: String, data: String): Single<Orders> {
+        val dataSet = hashMapOf(
+            "status" to 0,
+            "data" to data
+        )
+        return Single.create { emmiter ->
+            db.collection("users").document(idUser).collection("orders").document(id).set(dataSet)
+                .addOnSuccessListener {
+                    val orders = Orders(name = id, status = 0, data = data)
+                    emmiter.onSuccess(orders)
+                }
+        }
+    }
+
+    override fun setNameUser(user: User): Single<String> {
+        val name = hashMapOf(
+            "name" to user.name
+        )
+        return Single.create { emmiter ->
+            db.collection("users").document(user.id).set(name).addOnSuccessListener {
+                emmiter.onSuccess(user.name)
+            }.addOnFailureListener {
+                emmiter.onError(Throwable(it))
+            }
+        }
+    }
+
+    override fun getUser(id: String): Single<User> {
+        Log.d("User", id)
+        return Single.create { emmiter ->
+            db.collection("users").document(id).addSnapshotListener { value, error ->
+                if ((error == null) && (value != null)) {
+                    val user = User(value.getString("name")!!, id)
+                    emmiter.onSuccess(user)
+                } else {
+                    emmiter.onError(Throwable(error?.message))
+                }
+            }
+        }
     }
 
     override fun catalogStart(): Single<CatalogFirestore> {
@@ -85,6 +127,19 @@ class CatalogApiImpl(var context: Context) : CatalogApi {
                 catalog.listFeature = feature
                 Log.d("catalog", catalog.toString())
                 emmiter.onSuccess(catalog)
+            }
+        }
+    }
+
+    override fun allProduct(): Single<List<Product>> {
+        return Single.create { emmitre ->
+            db.collection("product").get().addOnSuccessListener {
+                val list = arrayListOf<Product>()
+                it.documents.forEach {
+                    val product = convertToProduct(it)
+                    list.add(product)
+                }
+                emmitre.onSuccess(list)
             }
         }
     }
@@ -205,7 +260,6 @@ class CatalogApiImpl(var context: Context) : CatalogApi {
                             emmiter.onSuccess(product)
                         } else {
                             Log.d("RX-e", error.toString())
-
                         }
                     }
                 })

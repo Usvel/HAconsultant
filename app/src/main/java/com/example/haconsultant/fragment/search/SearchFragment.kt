@@ -129,11 +129,18 @@ class SearchFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
     private fun searchText(text: String) {
         val list = arrayListOf<Product>()
         viewModel.searchList.value?.forEach {
-            if (it.name.toLowerCase().contains(text.toLowerCase())) {
+            if ((it.name.toLowerCase()
+                    .contains(text.toLowerCase())) || (it.codeVendor.contains(text))
+            ) {
                 list.add(it)
             }
         }
         searchProductAdapter?.items = list
+        if (list.size != 1) {
+            searchSizeProduct.text = "${list.size} товара"
+        } else {
+            searchSizeProduct.text = "${list.size} товар"
+        }
         searchProductAdapter?.notifyDataSetChanged()
     }
 
@@ -149,6 +156,11 @@ class SearchFragment : Fragment(), PopupMenu.OnMenuItemClickListener {
                 searchProductAdapter?.items = it
                 searchProductAdapter?.notifyDataSetChanged()
                 searchTitle.text = viewModel.feature.value?.nameCatalog
+                if (it.size != 1) {
+                    searchSizeProduct.text = "${it.size} товара"
+                } else {
+                    searchSizeProduct.text = "${it.size} товар"
+                }
                 if (!searchTextSearchProduct.text.isEmpty()) {
                     searchText(searchTextSearchProduct.text.toString())
                     searchTitle.text = searchTextSearchProduct.text

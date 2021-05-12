@@ -30,6 +30,7 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="40dp"
                 android:layout_weight="1"
+                android:singleLine="true"
                 android:autofillHints="Поиск"
                 android:background="@color/white"
                 android:hint="Название товара"
@@ -176,9 +177,12 @@
             </LinearLayout>
 
             <TextView
+                android:id="@+id/searchSizeProduct"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginStart="20dp"
+                android:layout_marginEnd="10dp"
                 android:text="Кол-во товара"
                 android:textColor="@color/black"
                 android:textSize="20sp" />
