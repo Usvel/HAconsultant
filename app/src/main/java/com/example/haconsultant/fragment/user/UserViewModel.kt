@@ -16,4 +16,9 @@ class UserViewModel : ViewModel() {
         this._name.value = "Отсканируйте Qr-код"
         this._id.value = "00000000"
     }
+
+    fun setUser(name: String, id: String) {
+        _name.value = name
+        _id.value = id
+    }
 }

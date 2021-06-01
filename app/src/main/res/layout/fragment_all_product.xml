@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragment.all.AllProductFragment">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="5dp">
+
+            <ImageButton
+                android:id="@+id/allProductBtnBack"
+                android:layout_width="60dp"
+                android:layout_height="30dp"
+                android:layout_gravity="start|center"
+                android:background="@color/design_default_color_primary"
+                android:src="@drawable/ic_baseline_keyboard_backspace_24" />
+
+            <EditText
+                android:id="@+id/allProductTextSearchProduct"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:layout_marginStart="40dp"
+                android:layout_weight="1"
+                android:autofillHints="Поиск"
+                android:background="@color/white"
+                android:singleLine="true"
+                android:hint="Название товара"
+                android:textColor="@color/black" />
+
+            <ImageButton
+                android:id="@+id/allProductBtnSearchProduct"
+                android:layout_width="60dp"
+                android:layout_height="30dp"
+                android:layout_gravity="end|center"
+                android:background="@color/design_default_color_primary"
+                android:src="@drawable/ic_baseline_search_24" />
+        </FrameLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/allProductRecycler"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:layout_marginTop="35dp"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        tools:listitem="@layout/home_item_product" />
+
+</FrameLayout>

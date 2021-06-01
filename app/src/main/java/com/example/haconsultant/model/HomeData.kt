@@ -14,7 +14,11 @@ object HomeData {
                 "https://static.eldorado.ru/photos/71/715/665/78/new_71566578_l_1605089603.jpeg/resize/380x240/",
                 "https://static.eldorado.ru/photos/71/715/665/78/new_71566578_l_1605089623.jpeg/resize/380x240/",
                 "https://static.eldorado.ru/photos/71/715/665/78/new_71566578_l_1605089643.jpeg/resize/380x240/"
-            )
+            ),
+            description = "описание",
+            listProduct = listOf(),
+            manufacturer = "apple",
+            characteristics = mapOf()
         ),
         Product(
             name = "Игровая приставка Sony PlayStation 5",
@@ -29,7 +33,11 @@ object HomeData {
                 "https://img.mvideo.ru/Pdb/40073270b1.jpg",
                 "https://img.mvideo.ru/Pdb/40073270b2.jpg",
                 "https://img.mvideo.ru/Pdb/40073270b3.jpg"
-            )
+            ),
+            description = "описание",
+            listProduct = listOf(),
+            manufacturer = "apple",
+            characteristics = mapOf()
         ),
         Product(
             name = "Беспроводные наушники с микрофоном Apple AirPods (2019)",
@@ -44,7 +52,11 @@ object HomeData {
                 "https://static.eldorado.ru/photos/71/715/117/62/new_71511762_l_1554720014.jpeg/resize/380x240/",
                 "https://static.eldorado.ru/photos/71/715/117/62/new_71511762_l_1554720096.jpeg/resize/380x240/",
                 "https://static.eldorado.ru/photos/71/715/117/62/new_71511762_l_1554720112.jpeg/resize/380x240/"
-            )
+            ),
+            description = "описание",
+            listProduct = listOf(),
+            manufacturer = "apple",
+            characteristics = mapOf()
         ),
         Product(
             name = "Название 4",
@@ -56,7 +68,11 @@ object HomeData {
             weight = 5.2F,
             listImage = listOf(
                 "https://static.eldorado.ru/photos/71/713/748/92/new_71374892_l_1529342853.jpeg"
-            )
+            ),
+            description = "описание",
+            listProduct = listOf(),
+            manufacturer = "apple",
+            characteristics = mapOf()
         ),
         Product(
             name = "Название 5",
@@ -68,9 +84,14 @@ object HomeData {
             weight = 5.2F,
             listImage = listOf(
                 "https://static.eldorado.ru/photos/71/715/908/88/new_71590888_l_1616156634.jpeg"
-            )
+            ),
+            description = "описание",
+            listProduct = listOf(),
+            manufacturer = "apple",
+            characteristics = mapOf()
         )
     )
+
 
     fun getHomeCatalog() = listOf(
         HomeCatalog(name = "Каталог", imageUrl = null),
@@ -109,7 +130,11 @@ object HomeData {
                 "https://static.eldorado.ru/photos/71/715/665/78/new_71566578_l_1605089603.jpeg/resize/380x240/",
                 "https://static.eldorado.ru/photos/71/715/665/78/new_71566578_l_1605089623.jpeg/resize/380x240/",
                 "https://static.eldorado.ru/photos/71/715/665/78/new_71566578_l_1605089643.jpeg/resize/380x240/"
-            )
+            ),
+            description = "описание",
+            listProduct = listOf(),
+            manufacturer = "apple",
+            characteristics = mapOf()
         ),
         Product(
             name = "Игровая приставка Sony PlayStation 5",
@@ -124,7 +149,11 @@ object HomeData {
                 "https://img.mvideo.ru/Pdb/40073270b1.jpg",
                 "https://img.mvideo.ru/Pdb/40073270b2.jpg",
                 "https://img.mvideo.ru/Pdb/40073270b3.jpg"
-            )
+            ),
+            description = "описание",
+            listProduct = listOf(),
+            manufacturer = "apple",
+            characteristics = mapOf()
         ),
         Product(
             name = "Беспроводные наушники с микрофоном Apple AirPods (2019)",
@@ -139,7 +168,11 @@ object HomeData {
                 "https://static.eldorado.ru/photos/71/715/117/62/new_71511762_l_1554720014.jpeg/resize/380x240/",
                 "https://static.eldorado.ru/photos/71/715/117/62/new_71511762_l_1554720096.jpeg/resize/380x240/",
                 "https://static.eldorado.ru/photos/71/715/117/62/new_71511762_l_1554720112.jpeg/resize/380x240/"
-            )
+            ),
+            description = "описание",
+            listProduct = listOf(),
+            manufacturer = "apple",
+            characteristics = mapOf()
         ),
         Product(
             name = "Название 4",
@@ -151,7 +184,11 @@ object HomeData {
             weight = 5.2F,
             listImage = listOf(
                 "https://static.eldorado.ru/photos/71/713/748/92/new_71374892_l_1529342853.jpeg"
-            )
+            ),
+            description = "описание",
+            listProduct = listOf(),
+            manufacturer = "apple",
+            characteristics = mapOf()
         ),
         Product(
             name = "Название 5",
@@ -163,7 +200,11 @@ object HomeData {
             weight = 5.2F,
             listImage = listOf(
                 "https://static.eldorado.ru/photos/71/715/908/88/new_71590888_l_1616156634.jpeg"
-            )
+            ),
+            description = "описание",
+            listProduct = listOf(),
+            manufacturer = "apple",
+            characteristics = mapOf()
         )
     )
 

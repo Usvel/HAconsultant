@@ -6,20 +6,36 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.haconsultant.R
+import com.example.haconsultant.fragment.filter.SearchFilterFragmentInteractor
+import com.example.haconsultant.fragment.history.HistoryAdapterInteractor
 import com.example.haconsultant.fragment.home.HomeFragmentInteractor
 import com.example.haconsultant.model.Catalog
 import com.example.haconsultant.model.Product
 import kotlinx.android.synthetic.main.item_arrow_text.view.*
 
-class CatalogAdapter(private val catalogfragmentInteractor: CatalogFragmentInteractor? = null) :
+class CatalogAdapter(
+    private val catalogfragmentInteractor: CatalogFragmentInteractor? = null,
+    private val searchFilterFragmentInteractor: SearchFilterFragmentInteractor? = null,
+    private val historyAdapterInteractor: HistoryAdapterInteractor? = null
+) :
     RecyclerView.Adapter<CatalogViewHolder>() {
 
-    var items: List<Catalog> = listOf()
+    var items: List<String> = listOf()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CatalogViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         val view = layoutInflater.inflate(R.layout.item_arrow_text, parent, false)
-        return CatalogViewHolder(view, { catalogfragmentInteractor?.onCatalogOpenNext(it) })
+        if (catalogfragmentInteractor != null) {
+            return CatalogViewHolder(view, { catalogfragmentInteractor?.onCatalogOpenNext(it) })
+        } else {
+            if (searchFilterFragmentInteractor != null) {
+                return CatalogViewHolder(
+                    view,
+                    { searchFilterFragmentInteractor?.openSearchFilter(it) })
+            } else {
+                return CatalogViewHolder(view, { historyAdapterInteractor?.onOpenOreder(it) })
+            }
+        }
     }
 
     override fun onBindViewHolder(holder: CatalogViewHolder, position: Int) {
@@ -34,11 +50,11 @@ class CatalogAdapter(private val catalogfragmentInteractor: CatalogFragmentInter
 
 class CatalogViewHolder(
     val view: View,
-    private val onClick: (Catalog) -> Unit
+    private val onClick: (String) -> Unit
 ) :
     RecyclerView.ViewHolder(view) {
-    fun onBind(catalog: Catalog) {
-        view.arrowText.text = catalog.name
+    fun onBind(catalog: String) {
+        view.arrowText.text = catalog
         view.setOnClickListener {
             onClick(catalog)
         }

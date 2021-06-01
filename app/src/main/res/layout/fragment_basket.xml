@@ -40,36 +40,34 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <LinearLayout
-        android:visibility="gone"
         android:id="@+id/bascketEmpty"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
         android:background="#f9f9f9"
+        android:gravity="center"
         android:orientation="vertical"
-        >
+        android:visibility="gone">
 
         <ImageView
             android:layout_width="320dp"
             android:layout_height="200dp"
             android:layout_gravity="center"
-            android:src="@drawable/basket_truck"/>
+            android:src="@drawable/basket_truck" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Корзина пуста"
             android:textColor="@color/black"
-            android:textSize="25sp"
-            />
+            android:textSize="25sp" />
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:maxWidth="240dp"
             android:gravity="center"
+            android:maxWidth="240dp"
             android:text="Перейдите в каталог и добавте желаемые товары"
-            android:textSize="20sp"
-            />
+            android:textSize="20sp" />
     </LinearLayout>
 
     <LinearLayout
@@ -99,9 +97,9 @@
                     android:layout_marginStart="20dp"
                     android:layout_marginTop="10dp"
                     android:layout_marginBottom="10dp"
-                    android:text="В корзине 3 товара"
                     android:textColor="@color/black"
-                    android:textSize="25sp" />
+                    android:textSize="25sp"
+                    tools:text="В корзине 3 товара" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/basketRecycler"
@@ -143,9 +141,9 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="end|top"
                 android:layout_margin="10dp"
+                android:maxWidth="82dp"
                 android:maxLines="1"
                 android:text="40,84 234кг"
-                android:maxWidth="82dp"
                 android:textColor="@color/black"
                 android:textSize="15sp" />
 

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/searchUs"
+        android:title="По рейтингу" />
+
+    <item
+        android:id="@+id/searchPriceAsc"
+        android:title="Сначала дещёвые" />
+
+    <item
+        android:id="@+id/searchPriceDesc"
+        android:title="Сначала дорогие" />
+</menu>

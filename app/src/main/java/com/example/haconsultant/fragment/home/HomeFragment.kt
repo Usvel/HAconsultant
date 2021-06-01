@@ -7,9 +7,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.haconsultant.R
+import com.example.haconsultant.model.HomeCatalog
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.fragment_product.*
 
@@ -48,6 +50,25 @@ class HomeFragment : Fragment() {
     private var homeCatalogAdapter: HomeCatalogAdapter? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
+        viewModel.statusNewList.observe(viewLifecycleOwner, Observer {
+            it.let {
+                when (it) {
+                    Status.Success -> {
+                        //шиммер
+                        homeTextNew.isVisible = true
+                        homeRecyclerNew.isVisible = true
+                    }
+                    Status.Failure -> {
+                        //шиммер
+                        homeTextNew.isVisible = false
+                        homeRecyclerNew.isVisible = false
+                    }
+                    else -> Unit
+                }
+            }
+        })
+
         setNewRecycler()
         setLastRecycler()
         setCatalogRecycler()
@@ -73,6 +94,7 @@ class HomeFragment : Fragment() {
         viewModel.newList.observe(viewLifecycleOwner, Observer {
             it.let {
                 newProductAdapter?.items = it
+                newProductAdapter?.notifyItemInserted(it.size)
             }
         })
         homeRecyclerNew.adapter = newProductAdapter
@@ -83,6 +105,11 @@ class HomeFragment : Fragment() {
         viewModel.lastList.observe(viewLifecycleOwner, Observer {
             it.let {
                 lastProductAdapter?.items = it
+                lastProductAdapter?.notifyDataSetChanged()
+                if (it.size != 0) {
+                    homeRecyclerWatched.isVisible = true
+                    homeLastText.isVisible = true
+                }
             }
         })
         homeRecyclerWatched.adapter = lastProductAdapter
@@ -92,7 +119,11 @@ class HomeFragment : Fragment() {
         homeCatalogAdapter = HomeCatalogAdapter(fragmentInteractor)
         viewModel.catalogList.observe(viewLifecycleOwner, Observer {
             it.let {
-                homeCatalogAdapter?.list = it
+                val listCatalog: MutableList<HomeCatalog> = arrayListOf()
+                listCatalog.add(0, HomeCatalog(name = "Каталог", imageUrl = null))
+                it.forEach { listCatalog.add(it) }
+                homeCatalogAdapter?.list = listCatalog
+                homeCatalogAdapter?.notifyDataSetChanged()
             }
         })
         homeRecyclerСatalog.adapter = homeCatalogAdapter

@@ -185,15 +185,17 @@
                 </androidx.cardview.widget.CardView>
 
                 <TextView
+                    android:id="@+id/productDescription"
                     android:layout_width="wrap_content"
-                    android:layout_height="100dp"
-                    android:layout_gravity="center"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center|start"
                     android:layout_marginStart="10dp"
-                    android:layout_marginTop="25dp"
+                    android:layout_marginTop="28dp"
                     android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="10dp"
                     android:ellipsize="end"
                     android:maxLines="5"
-                    android:text="Новый дисплей Liquid Retina — наш самый продвинутый ЖК‑дисплей. Ещё более быстрый Face ID. Самый мощный и умный процессор iPhone. И потрясающая камера. iPhone XR — воплощение красоты и интеллекта. Новый дисплей iPhone XR — самый продвинутый ЖК‑дисплей iPhone. Инновационные технологии подсветки позволили нам создать дисплей, закруглённый по углам и занимающий всю переднюю панель. Теперь реалистичные цвета заполняют её целиком." />
+                    tools:text="123" />
             </FrameLayout>
 
             <FrameLayout
@@ -236,15 +238,17 @@
                 </androidx.cardview.widget.CardView>
 
                 <TextView
+                    android:id="@+id/productCharacteristics"
                     android:layout_width="wrap_content"
-                    android:layout_height="100dp"
-                    android:layout_gravity="center"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center|start"
                     android:layout_marginStart="10dp"
-                    android:layout_marginTop="25dp"
+                    android:layout_marginTop="28dp"
                     android:layout_marginEnd="10dp"
+                    android:layout_marginBottom="10dp"
                     android:ellipsize="end"
                     android:maxLines="5"
-                    android:text="Новый дисплей Liquid Retina — наш самый продвинутый ЖК‑дисплей. Ещё более быстрый Face ID. Самый мощный и умный процессор iPhone. И потрясающая камера. iPhone XR — воплощение красоты и интеллекта. Новый дисплей iPhone XR — самый продвинутый ЖК‑дисплей iPhone. Инновационные технологии подсветки позволили нам создать дисплей, закруглённый по углам и занимающий всю переднюю панель. Теперь реалистичные цвета заполняют её целиком." />
+                    android:text="Характеристики" />
             </FrameLayout>
 
             <FrameLayout
@@ -274,6 +278,7 @@
                     app:cardCornerRadius="7dp">
 
                     <TextView
+                        android:visibility="gone"
                         android:id="@+id/productBtnAllSubjects"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

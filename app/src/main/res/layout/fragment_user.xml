@@ -72,14 +72,15 @@
     </androidx.cardview.widget.CardView>
 
     <include
-        android:id="@+id/userOrders"
+        android:id="@+id/userSetings"
         layout="@layout/item_arrow_text" />
 
     <include
-        android:id="@+id/userBonuses"
+        android:id="@+id/userHistori"
         layout="@layout/item_arrow_text" />
 
     <include
+        android:visibility="gone"
         android:id="@+id/userCoupons"
         layout="@layout/item_arrow_text" />
 </LinearLayout>

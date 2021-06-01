@@ -20,9 +20,11 @@ class BackStackLiveData : ViewModel() {
     private val _queueFragmenBasket: MutableLiveData<Stack<Fragment>> = MutableLiveData()
     private val _queueFragmenUser: MutableLiveData<Stack<Fragment>> = MutableLiveData()
     private val _statusFragment: MutableLiveData<StatusFragment> = MutableLiveData()
+    private val _statusCamera: MutableLiveData<StatusCamera> = MutableLiveData()
 
     //val queueFragmenHome: LiveData<Queue<Fragment>> = _queueFragmenHome
     val statusFragment: LiveData<StatusFragment> = _statusFragment
+    val statusCamera: LiveData<StatusCamera> = _statusCamera
 
     init {
         this._queueFragmenHome.value = Stack()
@@ -30,6 +32,11 @@ class BackStackLiveData : ViewModel() {
         this._queueFragmenBasket.value = Stack()
         this._queueFragmenUser.value = Stack()
         this._statusFragment.value = StatusFragment.Search
+        this._statusCamera.value = StatusCamera.CameraOff
+    }
+
+    fun setStatusCamera(statusCamera: StatusCamera) {
+        _statusCamera.value = statusCamera
     }
 
     fun setStatus(statusFragment: StatusFragment) {
@@ -78,21 +85,22 @@ class BackStackLiveData : ViewModel() {
         }
     }
 
-    fun removeQueueFragment() {
+    fun removeQueueFragment(): Fragment? {
         when (statusFragment.value) {
             StatusFragment.Search -> {
-                _queueFragmenHome.value?.pop()
+                return _queueFragmenHome.value?.pop()
             }
             StatusFragment.Catalog -> {
-                _queueFragmenCatalog.value?.pop()
+                return _queueFragmenCatalog.value?.pop()
             }
             StatusFragment.Basket -> {
-                _queueFragmenBasket.value?.pop()
+                return _queueFragmenBasket.value?.pop()
             }
             StatusFragment.User -> {
-                _queueFragmenUser.value?.pop()
+                return _queueFragmenUser.value?.pop()
             }
         }
+        return null
     }
 
     fun lastQeueFragment(): Fragment? {
@@ -115,10 +123,15 @@ class BackStackLiveData : ViewModel() {
 
     fun startQueueFragment() {
         _queueFragmenHome.value?.push(HomeFragment())
-        _queueFragmenCatalog.value?.push(CatalogFragment.newInstance(HomeData.getCatalog()))
+        _queueFragmenCatalog.value?.push(CatalogFragment())
         _queueFragmenBasket.value?.push(BasketFragment())
         _queueFragmenUser.value?.push(UserFragment())
     }
+}
+
+enum class StatusCamera() {
+    CameraOn,
+    CameraOff
 }
 
 enum class StatusFragment() {
